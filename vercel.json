@@ -1,0 +1,12 @@
+{
+    "version": 2,
+    "builds": [],
+    "routes": [
+      {
+        "src": "/(.*)",
+        "dest": "/index.html"
+      }
+    ],
+    "cleanUrls": true,
+    "trailingSlash": false
+  }
