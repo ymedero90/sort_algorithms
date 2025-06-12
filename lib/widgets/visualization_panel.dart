@@ -115,7 +115,7 @@ class VisualizationPanel extends StatelessWidget {
           const Icon(Icons.bar_chart, color: AppTheme.primary, size: 16),
           const SizedBox(width: 8),
           const Text(
-            'ARRAY VISUALIZATION',
+            'VISUALIZATION',
             style: TextStyle(color: AppTheme.text, fontSize: 11, fontWeight: FontWeight.w600, letterSpacing: 0.5),
           ),
           const Spacer(),

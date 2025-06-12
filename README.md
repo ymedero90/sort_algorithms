@@ -279,6 +279,15 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - Flutter community for excellent documentation and examples
 - Computer science educators worldwide for algorithm insights
 
+## 👨‍💻 Developer
+
+**Yoel Medero Vargas**  
+Senior Flutter Developer
+
+- 📧 Email: [ymedero90@gmail.com](mailto:ymedero90@gmail.com)
+- 💼 LinkedIn: [yoel-medero-vargas](https://www.linkedin.com/in/yoel-medero-vargas-0a661ba7/)
+- 🐱 GitHub: [ymedero90](https://github.com/ymedero90)
+
 ---
 
 **Made with ❤️ using Flutter**
