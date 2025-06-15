@@ -1,326 +1,176 @@
-# Sorting Algorithms Visualizer
+# 🎯 Sorting Algorithms Visualizer
 
-A beautiful, interactive Flutter application that visualizes various sorting algorithms with real-time step-by-step execution, pseudocode highlighting, and comprehensive algorithm information. Built with a modern MVC architecture and VSCode-inspired dark theme.
+An interactive educational tool for visualizing and understanding how different sorting algorithms work step-by-step. Built with Flutter for both desktop and mobile platforms.
 
-![VSCode-inspired dark theme interface](https://img.shields.io/badge/UI-VSCode%20Inspired-007ACC?style=flat-square)
-![Flutter](https://img.shields.io/badge/Flutter-02569B?style=flat-square&logo=flutter&logoColor=white)
-![Dart](https://img.shields.io/badge/Dart-0175C2?style=flat-square&logo=dart&logoColor=white)
-![Architecture](https://img.shields.io/badge/Architecture-MVC-28a745?style=flat-square)
+## ✨ Features
 
-## 🌟 Features
+### 📊 Interactive Visualization
 
-### 🎯 Interactive Visualization
+- **Real-time step-by-step animation** with adjustable speed control (0.1x to 2.0x)
+- **Color-coded elements** showing different states (normal, comparing, swapping, sorted)
+- **Detailed action history** with chronological algorithm steps
+- **Interactive pseudocode** with line-by-line highlighting
+- **Responsive design** optimized for desktop and mobile devices
 
-- **Real-time array visualization** with color-coded elements
-- **Step-by-step execution** with pause/resume functionality
-- **Manual step navigation** with previous/next controls in status bar
-- **Adjustable animation speed** (0.5x to 3.0x)
-- **Responsive design** with collapsible panels
-- **Smart input validation** with auto-correction for invalid values
+### 🔧 Comprehensive Algorithm Support
 
-### 📊 Supported Algorithms
+Currently supports **12 sorting algorithms** across different categories:
 
-Based on the actual implementation, the app includes these algorithms:
+#### Comparison-Based Algorithms
 
-- **Quick Sort** - Efficient divide-and-conquer algorithm
-- **Bubble Sort** - Educational comparison-based sorting
-- **Heap Sort** - In-place sorting using heap data structure
+- **Bubble Sort** - Simple with early termination optimization
+- **Selection Sort** - Minimum swaps approach  
+- **Insertion Sort** - Builds sorted array incrementally
+- **Shell Sort** - Gap-based improvement of insertion sort
+- **Quick Sort** - Divide-and-conquer with pivot partitioning
 - **Merge Sort** - Stable divide-and-conquer approach
-- **Insertion Sort** - Simple and efficient for small datasets
-- **Selection Sort** - In-place comparison sorting
-- **Radix Sort** - Non-comparative integer sorting
-- **Shell Sort** - Improved insertion sort with gap sequences
-- **Counting Sort** - Linear time sorting for limited range
-- **Bucket Sort** - Distribution sorting for uniform data
-- **Tim Sort** - Hybrid stable sorting implementation
-- **Bitonic Sort** - Parallel-friendly comparison network
+- **Heap Sort** - Uses binary heap data structure
+- **Tim Sort** - Hybrid merge sort + insertion sort (Python/Java standard)
 
-### 🎨 Visual Elements
+#### Non-Comparison Algorithms
 
-- **Color-coded visualization**:
-  - 🔵 Normal elements
-  - 🟡 Elements being compared
-  - 🔴 Elements being swapped
-  - 🟢 Sorted elements
-- **VSCode-inspired dark theme** with professional color palette
-- **Smooth animations** with pulse effects during execution
-- **Interactive legends** showing element states
-- **Developer info dialog** with professional contact information
+- **Counting Sort** - Integer sorting by occurrence counting
+- **Radix Sort** - Digit-by-digit sorting using counting sort
+- **Bucket Sort** - Distributes elements into sorted buckets
 
-### 📝 Educational Content
+#### Specialized Algorithms
 
-- **Real-time pseudocode highlighting** synchronized with visualization steps
-- **Comprehensive algorithm information** including:
-  - Time and space complexity analysis with detailed explanations
-  - Stability characteristics with visual indicators
-  - Advantages and disadvantages for each algorithm
-  - Algorithm-specific implementation details and theory
-  - Historical context and practical applications
-- **Two-tab interface**: Visualization and Information tabs
+- **Bitonic Sort** - Parallel sorting for power-of-2 arrays
 
-### ⚙️ Configuration Options
+### 📚 Educational Content
 
-- **Array size control** (3-64 elements with real-time validation)
-- **Algorithm selection** with comprehensive dropdown menu
-- **Speed adjustment** with intuitive slider (0.5x to 3.0x)
-- **Collapsible panels** for Configuration, Visualization, and Pseudocode sections
-- **State persistence** across algorithm changes
+- **Comprehensive algorithm information** with detailed explanations
+- **Complexity analysis** covering time, space, and stability
+- **Advantages and disadvantages** for each algorithm
+- **Use case recommendations** and practical insights
+- **Interactive pseudocode** synchronized with visualization
 
-## 🚀 Getting Started
+### 📱 Cross-Platform Experience
+
+#### Desktop Features
+
+- **Dual-panel layout** with visualization and pseudocode
+- **Collapsible panels** for focused learning
+- **Full configuration sidebar** with all controls
+- **Detailed step navigation** with status bar
+
+#### Mobile Features  
+
+- **Three-tab interface**: Visualization, Information, Settings
+- **Touch-optimized controls** with larger buttons
+- **Compact visualization** adapted for small screens
+- **Bottom control panel** with essential functions
+
+## 📖 How to Use
+
+### Getting Started
+
+1. **Select Algorithm**: Choose from 12 different sorting algorithms
+2. **Configure Array**: Set size (3-64 elements) and generate random data
+3. **Adjust Speed**: Control animation speed for optimal learning pace
+4. **Start Visualization**: Watch step-by-step algorithm execution
+5. **Explore Details**: Switch to Information tab for in-depth analysis
+
+### Understanding the Visualization
+
+**Color States:**
+
+- 🔵 **Normal (Blue)**: Elements in current position
+- 🟡 **Comparing (Yellow)**: Elements being compared
+- 🔴 **Swapping (Red)**: Elements being moved/swapped
+- 🟢 **Sorted (Green)**: Elements in final sorted position
+
+**Interactive Features:**
+
+- **Action History**: See chronological log of algorithm operations
+- **Pseudocode Tracking**: Follow highlighted code execution
+- **Manual Navigation**: Step forward/backward through the process
+- **Speed Control**: Adjust from very slow (0.1x) to fast (2.0x)
+
+## 🚀 Installation & Setup
 
 ### Prerequisites
 
 - Flutter SDK (>=3.0.0)
 - Dart SDK (>=3.0.0)
-- VS Code or Android Studio (recommended)
 
-### Installation
+### Quick Start
 
-1. **Clone the repository**
+```bash
+# Clone the repository
+git clone https://github.com/ymedero90/sorting-algorithms-visualizer.git
+cd sorting-algorithms-visualizer
 
-   ```bash
-   git clone https://github.com/ymedero90/sorting_algorithms.git
-   cd sorting_algorithms
-   ```
+# Install dependencies
+flutter pub get
 
-2. **Install dependencies**
-
-   ```bash
-   flutter pub get
-   ```
-
-3. **Run the application**
-
-   ```bash
-   flutter run
-   ```
-
-### Project Structure
-
-```
-lib/
-├── main.dart                      # Application entry point
-├── controllers/                   # MVC Controllers
-│   ├── sorting_controller.dart    # Main application state controller
-│   ├── configuration_controller.dart # Configuration panel controller
-│   ├── visualization_controller.dart # Visualization panel controller
-│   └── information_controller.dart   # Information panel controller
-├── models/
-│   ├── sort_step.dart             # Step model for visualization
-│   └── sorting_algorithm.dart     # Algorithm interface
-├── services/
-│   └── sorting_service.dart       # Algorithm execution service
-├── theme/
-│   └── app_theme.dart             # Centralized theme configuration
-├── pages/
-│   └── sorting_visualizer_page.dart # Main page with coordinated views
-├── widgets/                       # Reusable UI components
-│   ├── array_visualizer.dart      # Main visualization widget
-│   ├── pseudocode_viewer.dart     # Pseudocode display widget
-│   ├── configuration_panel.dart   # Settings and controls panel
-│   ├── visualization_panel.dart   # Array and pseudocode display
-│   ├── information_panel.dart     # Educational content panel
-│   ├── top_bar.dart              # Application header with developer info
-│   ├── bottom_status_bar.dart     # Step navigation and status
-│   └── developer_info_dialog.dart # Professional developer contact dialog
-└── algorithms/                    # Individual algorithm implementations
+# Run the application
+flutter run
 ```
 
-## 🏗️ Architecture
+## 📊 Algorithm Comparison
 
-### MVC Pattern Implementation
+| Algorithm | Time Complexity | Space | Stable | Best Use Case |
+|-----------|----------------|-------|--------|---------------|
+| **Bubble Sort** | O(n²) | O(1) | ✅ | Education, small arrays |
+| **Selection Sort** | O(n²) | O(1) | ❌ | Memory-constrained systems |
+| **Insertion Sort** | O(n²) | O(1) | ✅ | Small/nearly sorted arrays |
+| **Shell Sort** | O(n log²n) | O(1) | ❌ | Medium-sized arrays |
+| **Quick Sort** | O(n log n) avg | O(log n) | ❌ | General purpose, large arrays |
+| **Merge Sort** | O(n log n) | O(n) | ✅ | Stable sorting, linked lists |
+| **Heap Sort** | O(n log n) | O(1) | ❌ | Guaranteed performance |
+| **Tim Sort** | O(n log n) | O(n) | ✅ | Real-world data patterns |
+| **Counting Sort** | O(n+k) | O(k) | ✅ | Small integer ranges |
+| **Radix Sort** | O(d×n) | O(n) | ✅ | Fixed-length integers |
+| **Bucket Sort** | O(n+k) avg | O(n) | ✅ | Uniformly distributed data |
+| **Bitonic Sort** | O(n log²n) | O(log n) | ❌ | Parallel processing |
 
-The application follows a clean MVC (Model-View-Controller) architecture:
+## 🎓 Educational Objectives
 
-#### **Controllers**
-- **SortingController**: Main application state and business logic
-- **ConfigurationController**: Algorithm selection and parameter configuration
-- **VisualizationController**: Array display and animation state
-- **InformationController**: Educational content and algorithm details
+Students will learn:
 
-#### **Models**
-- **SortingAlgorithm**: Abstract interface for all sorting algorithms
-- **SortStep**: Immutable state representation for each visualization step
+1. **Algorithm Mechanics**: How each sorting method works internally
+2. **Performance Trade-offs**: Time vs space vs stability considerations  
+3. **Practical Applications**: When to use each algorithm in real scenarios
+4. **Complexity Analysis**: Understanding Big O notation through examples
+5. **Implementation Patterns**: Common computer science techniques
 
-#### **Views**
-- **Widgets**: Pure presentation components that react to controller state
-- **Pages**: Coordinate multiple widgets and controllers
+## 🛠️ Technical Architecture
 
-### Algorithm Interface
+### Core Components
 
-Each sorting algorithm implements the `SortingAlgorithm` abstract class:
-
-```dart
-abstract class SortingAlgorithm {
-  String get name;
-  String get description;
-  String get timeComplexity;
-  String get spaceComplexity;
-  bool get isStable;
-  List<String> get advantages;
-  List<String> get disadvantages;
-  List<String> get pseudocode;
-  
-  // Educational explanations
-  String getTimeComplexityExplanation();
-  String getSpaceComplexityExplanation();
-  String getStabilityExplanation();
-  
-  List<SortStep> sort(List<int> array);
-}
-```
-
-### State Management
-
-- **ChangeNotifier**: Controllers use Flutter's built-in state management
-- **ListenableBuilder**: Widgets automatically rebuild when state changes
-- **Centralized State**: All application state managed through controllers
-- **Reactive Architecture**: UI automatically syncs with business logic
-
-## 🎮 How to Use
-
-### Basic Operations
-
-1. **Select an algorithm** from the dropdown menu in Configuration panel
-2. **Set array size** (3-64 elements) - values outside this range are auto-corrected
-3. **Generate a new array** using the "New Array" button
-4. **Start visualization** with the Start/Pause/Resume button
-5. **Control playback** with the three action buttons (New Array, Start/Pause, Reset)
-6. **Adjust speed** using the speed slider in real-time
-
-### Interface Navigation
-
-- **Configuration Panel**: Algorithm settings and controls (collapsible)
-- **Visualization Tab**: Real-time array visualization and synchronized pseudocode
-- **Information Tab**: Detailed algorithm analysis and educational content
-- **Collapsible Panels**: Click chevron arrows to hide/show sections
-- **Status Bar**: Current step counter and manual navigation controls
-- **Developer Info**: Click "Developer" in top-right corner for contact information
-
-### Advanced Features
-
-- **Smart Validation**: Input fields automatically correct invalid values
-- **State Persistence**: Settings maintained when switching algorithms
-- **Professional UI**: VSCode-inspired design with consistent theming
-- **Educational Focus**: Comprehensive learning materials for each algorithm
-
-## 🎨 Customization
-
-### Adding New Algorithms
-
-1. Create a new file in `lib/algorithms/`
-2. Implement the `SortingAlgorithm` interface
-3. Add the algorithm to `SortingService.algorithms` list
-4. Include algorithm-specific information in `InformationController`
-
-### Theming
-
-The application uses a centralized VSCode-inspired color scheme in `AppTheme`:
-
-```dart
-// Primary colors
-static const Color background = Color(0xFF1E1E1E);
-static const Color surface = Color(0xFF252526);
-static const Color header = Color(0xFF2D2D30);
-static const Color primary = Color(0xFF007ACC);
-static const Color text = Color(0xFFCCCCCC);
-static const Color textSecondary = Color(0xFF858585);
-
-// Algorithm state colors
-static const Color normal = Color(0xFF569CD6);
-static const Color comparing = Color(0xFFDCDCAA);
-static const Color swapping = Color(0xFFF44747);
-static const Color sorted = Color(0xFF4EC9B0);
-```
-
-## 🤝 Contributing
-
-We welcome contributions! Please follow these steps:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/new-algorithm`)
-3. Follow the MVC architecture patterns
-4. Add comprehensive documentation and tests
-5. Ensure UI consistency with existing design
-6. Commit your changes (`git commit -am 'Add new sorting algorithm'`)
-7. Push to the branch (`git push origin feature/new-algorithm`)
-8. Create a Pull Request
-
-### Contribution Guidelines
-
-- **Architecture**: Follow the established MVC pattern
-- **Code Style**: Adhere to Dart/Flutter coding standards
-- **Documentation**: Include detailed algorithm explanations
-- **Testing**: Add unit tests for new controllers and algorithms
-- **UI Consistency**: Maintain VSCode-inspired design language
-
-## 📊 Performance
-
-The visualizer is optimized for smooth performance:
-
-- **Efficient State Management**: Controllers minimize unnecessary rebuilds
-- **Smart Rendering**: Only affected widgets rebuild on state changes
-- **Memory Management**: Optimized for arrays up to 64 elements
-- **Responsive Animations**: Configurable speeds with smooth interpolation
-- **Input Validation**: Prevents invalid states and crashes
-
-## 🔧 Technical Details
-
-### Dependencies
-
-- `flutter/material.dart` - Material Design components
-- `flutter/services.dart` - Clipboard operations for developer info
-- `dart:math` - Mathematical operations and random generation
+- **SortingController**: Central state management and algorithm execution
+- **VisualizationController**: Handles display state and animations  
+- **ConfigurationController**: Manages user settings and inputs
+- **InformationController**: Provides educational content
 
 ### Key Features
 
-- **MVC Architecture**: Separated concerns with dedicated controllers
-- **Reactive State Management**: Automatic UI updates via ChangeNotifier
-- **Professional UI**: VSCode-inspired design with developer branding
-- **Educational Focus**: Comprehensive algorithm information and explanations
-- **Input Validation**: Smart correction of invalid user inputs
-- **Asset Management**: Integrated developer avatar and branding
+- **Responsive Design**: Adaptive layouts for different screen sizes
+- **Smooth Animations**: 60fps transitions with Flutter's AnimationController
+- **Modular Architecture**: Easy to extend with new algorithms
+- **Educational Focus**: Step-by-step learning with detailed explanations
 
-### Supported Platforms
+## 🤝 Contributing
 
-- ✅ Android (Mobile & Tablet)
-- ✅ iOS (iPhone & iPad)
-- ✅ Web (Desktop browsers)
-- ✅ Desktop (Windows, macOS, Linux)
+We welcome contributions! Areas for enhancement:
 
-## 📚 Educational Value
+- **New Algorithms**: Add more sorting methods (Cocktail Sort, Gnome Sort, etc.)
+- **Enhanced Visualizations**: Improve animations and visual feedback
+- **Educational Content**: Expand explanations and add more examples  
+- **Performance**: Optimize for larger datasets
+- **Accessibility**: Add screen reader support and keyboard navigation
 
-This visualizer is perfect for:
+## 👨‍💻 Developer
 
-- **Computer Science Students**: Learning sorting algorithms with visual feedback
-- **Educators**: Teaching algorithm concepts with interactive demonstrations
-- **Software Developers**: Reviewing algorithm implementations and complexity
-- **Algorithm Enthusiasts**: Exploring different sorting approaches and optimizations
+**Yoel Medero Vargas**  
+Senior Flutter Developer
 
-### Educational Features
+- 📧 **Email**: <ymedero90@gmail.com>
+- 💼 **LinkedIn**: [linkedin.com/in/yoel-medero-vargas-0a661ba7/](https://www.linkedin.com/in/yoel-medero-vargas-0a661ba7/)
+- 🐙 **GitHub**: [github.com/ymedero90](https://github.com/ymedero90)
 
-- **Step-by-Step Breakdown**: Each algorithm step explained with descriptions
-- **Complexity Analysis**: Detailed time and space complexity explanations
-- **Stability Indicators**: Visual representation of algorithm stability
-- **Practical Applications**: Real-world use cases for each algorithm
-- **Historical Context**: Background information on algorithm development
-
-## 🐛 Known Issues
-
-- Large arrays (>50 elements) may impact performance on older devices
-- Web version may have slight animation delays on slower connections
-- Array size input accepts only values between 3-64 (auto-corrected otherwise)
-
-## 🗺️ Roadmap
-
-- [ ] **Algorithm Comparison Mode**: Side-by-side algorithm performance
-- [ ] **Custom Array Input**: Allow users to input their own arrays
-- [ ] **Performance Benchmarking**: Real-time performance metrics
-- [ ] **Sound Effects**: Audio feedback for operations
-- [ ] **Export Functionality**: Save visualizations as GIFs/videos
-- [ ] **Keyboard Shortcuts**: Hotkeys for common operations
-- [ ] **Algorithm Variants**: Different implementations of same algorithms
-- [ ] **Mobile Optimizations**: Enhanced mobile/tablet experience
+*Passionate about creating educational tools that make complex computer science concepts accessible through interactive visualization.*
 
 ## 📄 License
 
@@ -328,31 +178,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Inspired by various algorithm visualization tools and educational platforms
-- VSCode team for the beautiful dark theme that inspired our design
-- Flutter community for excellent documentation and development tools
-- Computer science educators worldwide for algorithm insights and teaching methods
-- Open source contributors who make projects like this possible
-
-## 👨‍💻 Developer
-
-**Yoel Medero Vargas**  
-Senior Flutter Developer
-
-Passionate about creating beautiful and functional mobile applications with Flutter. This sorting algorithms visualizer was built to help students and developers understand how different sorting algorithms work through interactive visualization.
-
-### Contact Information
-
-- 📧 **Email**: [ymedero90@gmail.com](mailto:ymedero90@gmail.com)
-- 💼 **LinkedIn**: [yoel-medero-vargas](https://www.linkedin.com/in/yoel-medero-vargas-0a661ba7/)
-- 🐱 **GitHub**: [ymedero90](https://github.com/ymedero90)
-
-*Click the "Developer" button in the app's top-right corner to view this information interactively!*
+- Flutter team for the amazing framework
+- Computer science educators for inspiration  
+- The global developer community for continuous learning
 
 ---
 
-**Made with ❤️ using Flutter**
-
-*Educational • Interactive • Beautiful • Professional*
-
-⭐ **Star this repository if you found it helpful!**
+*Built with ❤️ and Flutter to make sorting algorithms accessible to everyone*
