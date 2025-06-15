@@ -5,8 +5,9 @@ import '../models/sort_step.dart';
 class ArrayVisualizer extends StatefulWidget {
   final SortStep step;
   final AnimationController animationController;
+  final bool isMobile;
 
-  const ArrayVisualizer({super.key, required this.step, required this.animationController});
+  const ArrayVisualizer({super.key, required this.step, required this.animationController, this.isMobile = false});
 
   @override
   State<ArrayVisualizer> createState() => _ArrayVisualizerState();
@@ -100,13 +101,13 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(20),
+      padding: EdgeInsets.all(widget.isMobile ? 12 : 20),
       child: Column(
         children: [
-          // Action history panel
+          // Action history panel - más compacto en móvil
           Container(
-            constraints: const BoxConstraints(minHeight: 80, maxHeight: 140),
-            padding: const EdgeInsets.all(16),
+            constraints: BoxConstraints(minHeight: widget.isMobile ? 60 : 80, maxHeight: widget.isMobile ? 100 : 140),
+            padding: EdgeInsets.all(widget.isMobile ? 12 : 16),
             decoration: BoxDecoration(
               color: const Color(0xFF252526),
               borderRadius: BorderRadius.circular(8),
@@ -124,28 +125,29 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                       decoration: BoxDecoration(color: const Color(0xFF007ACC), borderRadius: BorderRadius.circular(2)),
                     ),
                     const SizedBox(width: 8),
-                    const Text(
-                      'Action History',
-                      style: TextStyle(color: Color(0xFF858585), fontSize: 11, fontWeight: FontWeight.w600),
+                    Text(
+                      widget.isMobile ? 'History' : 'Action History',
+                      style: const TextStyle(color: Color(0xFF858585), fontSize: 11, fontWeight: FontWeight.w600),
                     ),
                     const Spacer(),
-                    Text(
-                      '${_actionHistory.length} actions',
-                      style: const TextStyle(color: Color(0xFF858585), fontSize: 10),
-                    ),
+                    Text('${_actionHistory.length}', style: const TextStyle(color: Color(0xFF858585), fontSize: 10)),
                   ],
                 ),
 
-                const SizedBox(height: 8),
+                SizedBox(height: widget.isMobile ? 6 : 8),
 
                 // Lista de acciones con scroll
                 Expanded(
                   child:
                       _actionHistory.isEmpty
-                          ? const Center(
+                          ? Center(
                             child: Text(
-                              'Start to see history...',
-                              style: TextStyle(color: Color(0xFF858585), fontSize: 12, fontStyle: FontStyle.italic),
+                              widget.isMobile ? 'Start...' : 'Start to see history...',
+                              style: const TextStyle(
+                                color: Color(0xFF858585),
+                                fontSize: 12,
+                                fontStyle: FontStyle.italic,
+                              ),
                             ),
                           )
                           : ListView.builder(
@@ -159,8 +161,11 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                               return AnimatedContainer(
                                 duration: Duration(milliseconds: 200 + (index * 50)),
                                 curve: Curves.easeOut,
-                                margin: const EdgeInsets.only(bottom: 4),
-                                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                margin: EdgeInsets.only(bottom: widget.isMobile ? 2 : 4),
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: widget.isMobile ? 6 : 8,
+                                  vertical: widget.isMobile ? 2 : 4,
+                                ),
                                 decoration: BoxDecoration(
                                   color: isLatest ? const Color(0xFF007ACC).withOpacity(0.2) : Colors.transparent,
                                   borderRadius: BorderRadius.circular(4),
@@ -169,31 +174,32 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                 child: Row(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    // Indicador de tiempo/orden
-                                    Container(
-                                      width: 20,
-                                      height: 16,
-                                      margin: const EdgeInsets.only(top: 1),
-                                      decoration: BoxDecoration(
-                                        color:
-                                            isLatest
-                                                ? const Color(0xFF007ACC)
-                                                : const Color(0xFF858585).withOpacity(0.3),
-                                        borderRadius: BorderRadius.circular(8),
-                                      ),
-                                      child: Center(
-                                        child: Text(
-                                          '${reversedIndex + 1}',
-                                          style: TextStyle(
-                                            color: isLatest ? Colors.white : const Color(0xFF858585),
-                                            fontSize: 9,
-                                            fontWeight: FontWeight.bold,
+                                    if (!widget.isMobile) ...[
+                                      // Indicador de tiempo/orden
+                                      Container(
+                                        width: 18,
+                                        height: 14,
+                                        margin: const EdgeInsets.only(top: 1),
+                                        decoration: BoxDecoration(
+                                          color:
+                                              isLatest
+                                                  ? const Color(0xFF007ACC)
+                                                  : const Color(0xFF858585).withOpacity(0.3),
+                                          borderRadius: BorderRadius.circular(7),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            '${reversedIndex + 1}',
+                                            style: TextStyle(
+                                              color: isLatest ? Colors.white : const Color(0xFF858585),
+                                              fontSize: 8,
+                                              fontWeight: FontWeight.bold,
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-
-                                    const SizedBox(width: 8),
+                                      const SizedBox(width: 6),
+                                    ],
 
                                     // Texto de la acción
                                     Expanded(
@@ -201,11 +207,15 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                         duration: const Duration(milliseconds: 200),
                                         style: TextStyle(
                                           color: isLatest ? const Color(0xFFCCCCCC) : const Color(0xFF858585),
-                                          fontSize: isLatest ? 12 : 11,
+                                          fontSize: widget.isMobile ? 10 : (isLatest ? 12 : 11),
                                           fontWeight: isLatest ? FontWeight.w500 : FontWeight.normal,
                                           height: 1.2,
                                         ),
-                                        child: Text(action, maxLines: 2, overflow: TextOverflow.ellipsis),
+                                        child: Text(
+                                          action,
+                                          maxLines: widget.isMobile ? 1 : 2,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
                                       ),
                                     ),
 
@@ -213,8 +223,8 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                     if (isLatest) ...[
                                       const SizedBox(width: 4),
                                       Container(
-                                        width: 6,
-                                        height: 6,
+                                        width: widget.isMobile ? 4 : 6,
+                                        height: widget.isMobile ? 4 : 6,
                                         decoration: const BoxDecoration(
                                           color: Color(0xFF4EC9B0),
                                           shape: BoxShape.circle,
@@ -231,14 +241,14 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
             ),
           ),
 
-          const SizedBox(height: 24),
+          SizedBox(height: widget.isMobile ? 16 : 24),
 
           // Array visualization
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
                 final arrayLength = widget.step.array.length;
-                final isCompact = arrayLength > 15;
+                final isCompact = arrayLength > (widget.isMobile ? 10 : 15);
 
                 return Column(
                   children: [
@@ -260,22 +270,33 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                               return AnimatedBuilder(
                                 animation: _pulseAnimation,
                                 builder: (context, child) {
-                                  return SizedBox(
-                                    width:
+                                  double barWidth;
+                                  if (widget.isMobile) {
+                                    barWidth =
+                                        isCompact
+                                            ? (constraints.maxWidth / arrayLength * 0.85).clamp(6.0, 25.0)
+                                            : (constraints.maxWidth / arrayLength * 0.9).clamp(15.0, 35.0);
+                                  } else {
+                                    barWidth =
                                         isCompact
                                             ? (constraints.maxWidth / arrayLength * 0.8).clamp(8.0, 40.0)
-                                            : (constraints.maxWidth / arrayLength * 0.9).clamp(20.0, 60.0),
+                                            : (constraints.maxWidth / arrayLength * 0.9).clamp(20.0, 60.0);
+                                  }
+
+                                  return SizedBox(
+                                    width: barWidth,
                                     child: Column(
                                       mainAxisAlignment: MainAxisAlignment.end,
                                       children: [
                                         // Value label
                                         SizedBox(
-                                          height: 24,
+                                          height: widget.isMobile ? 16 : 24,
                                           child: Center(
                                             child: AnimatedDefaultTextStyle(
                                               duration: const Duration(milliseconds: 150),
                                               style: TextStyle(
-                                                fontSize: isCompact ? 10 : 12,
+                                                fontSize:
+                                                    widget.isMobile ? (isCompact ? 8 : 10) : (isCompact ? 10 : 12),
                                                 fontWeight: isActive ? FontWeight.bold : FontWeight.w600,
                                                 color: barColor,
                                               ),
@@ -284,7 +305,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                           ),
                                         ),
 
-                                        const SizedBox(height: 4),
+                                        SizedBox(height: widget.isMobile ? 2 : 4),
 
                                         // Animated bar
                                         TweenAnimationBuilder<Color?>(
@@ -293,7 +314,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                           builder: (context, color, child) {
                                             return TweenAnimationBuilder<double>(
                                               duration: const Duration(milliseconds: 500),
-                                              tween: Tween(end: height.clamp(20.0, double.infinity)),
+                                              tween: Tween(end: height.clamp(15.0, double.infinity)),
                                               curve: Curves.easeInOut,
                                               builder: (context, animatedHeight, child) {
                                                 final effectiveColor = color ?? barColor;
@@ -306,14 +327,14 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                                       end: Alignment.bottomCenter,
                                                       colors: [effectiveColor, effectiveColor.withOpacity(0.7)],
                                                     ),
-                                                    borderRadius: BorderRadius.circular(4),
+                                                    borderRadius: BorderRadius.circular(widget.isMobile ? 2 : 4),
                                                     boxShadow:
                                                         isActive
                                                             ? [
                                                               BoxShadow(
                                                                 color: effectiveColor.withOpacity(0.5),
-                                                                blurRadius: 6,
-                                                                spreadRadius: 2,
+                                                                blurRadius: widget.isMobile ? 4 : 6,
+                                                                spreadRadius: widget.isMobile ? 1 : 2,
                                                               ),
                                                             ]
                                                             : null,
@@ -325,7 +346,9 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                                             builder: (context, child) {
                                                               return Container(
                                                                 decoration: BoxDecoration(
-                                                                  borderRadius: BorderRadius.circular(4),
+                                                                  borderRadius: BorderRadius.circular(
+                                                                    widget.isMobile ? 2 : 4,
+                                                                  ),
                                                                   color: Colors.white.withOpacity(
                                                                     _pulseAnimation.value * 0.1,
                                                                   ),
@@ -348,25 +371,35 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                       ),
                     ),
 
-                    const SizedBox(height: 16),
+                    SizedBox(height: widget.isMobile ? 8 : 16),
 
                     // Index labels
                     SizedBox(
-                      height: 24,
+                      height: widget.isMobile ? 16 : 24,
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children:
                             widget.step.array.asMap().entries.map((entry) {
                               final index = entry.key;
                               final isActive = _isActiveElement(index);
-                              final isCompact = widget.step.array.length > 15;
+                              final isCompact = widget.step.array.length > (widget.isMobile ? 10 : 15);
                               final barColor = _getBarColor(index);
 
-                              return SizedBox(
-                                width:
+                              double indexWidth;
+                              if (widget.isMobile) {
+                                indexWidth =
+                                    isCompact
+                                        ? (constraints.maxWidth / widget.step.array.length * 0.85).clamp(6.0, 25.0)
+                                        : (constraints.maxWidth / widget.step.array.length * 0.9).clamp(15.0, 35.0);
+                              } else {
+                                indexWidth =
                                     isCompact
                                         ? (constraints.maxWidth / widget.step.array.length * 0.8).clamp(8.0, 40.0)
-                                        : (constraints.maxWidth / widget.step.array.length * 0.9).clamp(20.0, 60.0),
+                                        : (constraints.maxWidth / widget.step.array.length * 0.9).clamp(20.0, 60.0);
+                              }
+
+                              return SizedBox(
+                                width: indexWidth,
                                 child: Center(
                                   child: TweenAnimationBuilder<Color?>(
                                     duration: const Duration(milliseconds: 150),
@@ -376,7 +409,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                     ),
                                     builder: (context, backgroundColor, child) {
                                       return Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
+                                        padding: EdgeInsets.symmetric(horizontal: widget.isMobile ? 2 : 4, vertical: 2),
                                         decoration: BoxDecoration(
                                           color: backgroundColor,
                                           borderRadius: BorderRadius.circular(4),
@@ -384,7 +417,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                         child: AnimatedDefaultTextStyle(
                                           duration: const Duration(milliseconds: 150),
                                           style: TextStyle(
-                                            fontSize: isCompact ? 9 : 11,
+                                            fontSize: widget.isMobile ? (isCompact ? 7 : 9) : (isCompact ? 9 : 11),
                                             fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
                                             color: isActive ? barColor : const Color(0xFF858585),
                                           ),

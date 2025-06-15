@@ -92,42 +92,14 @@ class DeveloperInfoDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(8),
         border: Border.all(color: AppTheme.divider),
       ),
-      child: Column(
+      child: const Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Container(
-                width: 48,
-                height: 48,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(24),
-                  border: Border.all(color: AppTheme.primary, width: 2),
-                ),
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(22),
-                  child: Image.asset(
-                    'assets/images/developer_avatar.jpg',
-                    width: 44,
-                    height: 44,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) {
-                      // Fallback to icon if image fails to load
-                      return Container(
-                        width: 44,
-                        height: 44,
-                        decoration: BoxDecoration(
-                          color: AppTheme.primary.withOpacity(0.2),
-                          borderRadius: BorderRadius.circular(22),
-                        ),
-                        child: const Icon(Icons.person, color: AppTheme.primary, size: 24),
-                      );
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(width: 12),
-              const Expanded(
+              Icon(Icons.person, color: AppTheme.primary, size: 24),
+              SizedBox(width: 12),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -144,8 +116,8 @@ class DeveloperInfoDialog extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const Text(
+          SizedBox(height: 16),
+          Text(
             'Passionate about creating beautiful and functional mobile applications with Flutter. '
             'This sorting algorithms visualizer was built to help students and developers '
             'understand how different sorting algorithms work through interactive visualization.',
@@ -205,7 +177,5 @@ class DeveloperInfoDialog extends StatelessWidget {
 
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text));
-    // Note: In a real app, you might want to show a snackbar here
-    // but since we're in a dialog, we'll keep it simple
   }
 }

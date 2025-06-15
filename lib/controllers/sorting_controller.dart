@@ -206,8 +206,18 @@ class SortingController extends ChangeNotifier {
 
   // UI State Management
   void setActiveTab(int index) {
+    if (_debugMode) print('📱 Setting active tab to: $index');
     _activeTabIndex = index;
     notifyListeners();
+  }
+
+  void setMobileTab(int index) {
+    // Para móvil, asegurar que el índice sea válido (0, 1, 2)
+    if (index >= 0 && index <= 2) {
+      if (_debugMode) print('📱 Setting mobile tab to: $index');
+      _activeTabIndex = index;
+      notifyListeners();
+    }
   }
 
   void toggleSidebar() {
