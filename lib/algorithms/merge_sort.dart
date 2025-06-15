@@ -69,18 +69,18 @@ class MergeSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Merge Sort: Stable divide-and-conquer algorithm',
+        description: '🎯 Merge Sort: Starting divide-and-conquer process',
         currentPseudocodeLine: 0,
       ),
     );
 
-    _mergeSort(arr, 0, arr.length - 1);
+    _mergeSort(arr, 0, arr.length - 1, 0);
 
     _steps.add(
       SortStep(
         array: List.from(arr),
         sorted: List.generate(arr.length, (index) => index),
-        description: '🎉 Merge Sort completed! All subarrays have been divided and merged',
+        description: '🎉 Merge Sort completed! Array is fully sorted',
         currentPseudocodeLine: 6,
       ),
     );
@@ -88,88 +88,109 @@ class MergeSort extends SortingAlgorithm {
     return _steps;
   }
 
-  void _mergeSort(List<int> arr, int left, int right) {
-    _steps.add(
-      SortStep(
-        array: List.from(arr),
-        description: '🔄 MergeSort called for range [$left, $right]',
-        currentPseudocodeLine: 1,
-      ),
-    );
-
+  void _mergeSort(List<int> arr, int left, int right, int depth) {
     if (left < right) {
       int mid = (left + right) ~/ 2;
 
       _steps.add(
-        SortStep(array: List.from(arr), description: '📊 Calculating middle: mid = $mid', currentPseudocodeLine: 2),
+        SortStep(
+          array: List.from(arr),
+          comparing: List.generate(right - left + 1, (i) => left + i),
+          description: '🔍 Analyzing range [$left..$right]: Can we divide this further?',
+          currentPseudocodeLine: 1,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: List.generate(right - left + 1, (i) => left + i),
+          description: '📐 Calculating midpoint: mid = ($left + $right) ÷ 2 = $mid',
+          currentPseudocodeLine: 2,
+        ),
       );
 
       _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: List.generate(mid - left + 1, (i) => left + i),
-          description: '🔄 Recursively sorting left half [$left, $mid]',
+          description: '⬅️ DIVIDE: First half [$left..$mid] - Going deeper (depth ${depth + 1})',
           currentPseudocodeLine: 3,
         ),
       );
+
+      _mergeSort(arr, left, mid, depth + 1);
 
       _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: List.generate(right - mid, (i) => mid + 1 + i),
-          description: '🔄 Recursively sorting right half [${mid + 1}, $right]',
+          description: '➡️ DIVIDE: Second half [${mid + 1}..$right] - Going deeper (depth ${depth + 1})',
           currentPseudocodeLine: 4,
+        ),
+      );
+
+      _mergeSort(arr, mid + 1, right, depth + 1);
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: List.generate(right - left + 1, (i) => left + i),
+          description: '🔄 CONQUER: Both halves processed. Ready to merge [$left..$mid] with [${mid + 1}..$right]',
+          currentPseudocodeLine: 5,
+        ),
+      );
+
+      _merge(arr, left, mid, right);
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          sorted: List.generate(right - left + 1, (i) => left + i),
+          description: '✅ MERGE COMPLETE: Range [$left..$right] is now sorted and merged',
+          currentPseudocodeLine: 5,
+        ),
+      );
+    } else if (left == right) {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [left],
+          description: '🔍 Checking: Can we divide [$left..$right]? No, this is a single element.',
+          currentPseudocodeLine: 1,
         ),
       );
 
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '🔀 Merging sorted halves [$left, $mid] and [${mid + 1}, $right]',
-          currentPseudocodeLine: 5,
+          sorted: [left],
+          description: '✅ BASE CASE: Single element arr[$left] = ${arr[left]} is already sorted by definition',
+          currentPseudocodeLine: 1,
         ),
       );
-      _merge(arr, left, mid, right);
     }
   }
 
   void _merge(List<int> arr, int left, int mid, int right) {
-    _steps.add(
-      SortStep(
-        array: List.from(arr),
-        comparing: List.generate(right - left + 1, (i) => left + i),
-        description: '🎯 Función merge: Fusionando subarrays [$left..$mid] y [${mid + 1}..$right]',
-        currentPseudocodeLine: 7,
-      ),
-    );
-
-    // Crear subarrays temporales
-    List<int> leftArr = [];
-    List<int> rightArr = [];
-
-    for (int i = left; i <= mid; i++) {
-      leftArr.add(arr[i]);
-    }
-    for (int i = mid + 1; i <= right; i++) {
-      rightArr.add(arr[i]);
-    }
-
-    int n1 = leftArr.length;
-    int n2 = rightArr.length;
+    List<int> leftArr = arr.sublist(left, mid + 1);
+    List<int> rightArr = arr.sublist(mid + 1, right + 1);
 
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '📋 Creating temporary arrays: left[$n1] and right[$n2]',
-        currentPseudocodeLine: 7,
-      ),
-    );
-
-    _steps.add(
-      SortStep(
-        array: List.from(arr),
-        description: '🔀 Merging: left=$leftArr and right=$rightArr',
+        comparing: List.generate(mid - left + 1, (i) => left + i),
+        description: '📋 STEP 1: Copying left half [$left..$mid] to temporary array',
         currentPseudocodeLine: 8,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        comparing: List.generate(right - mid, (i) => mid + 1 + i),
+        description: '📋 STEP 2: Copying right half [${mid + 1}..$right] to temporary array',
+        currentPseudocodeLine: 9,
       ),
     );
 
@@ -178,19 +199,36 @@ class MergeSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '📝 Inicializando índices: i=0, j=0, k=$left',
+        description: '📋 STEP 3: Temporary arrays created - Left: $leftArr, Right: $rightArr',
         currentPseudocodeLine: 10,
       ),
     );
 
-    // Fusionar los subarrays de vuelta en arr[left..right]
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '🎯 STEP 4: Initialize pointers - i=0 (left), j=0 (right), k=$k (merge position)',
+        currentPseudocodeLine: 10,
+      ),
+    );
+
     while (i < leftArr.length && j < rightArr.length) {
       _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: [k],
-          description: '🔍 Comparing ${leftArr[i]} ≤ ${rightArr[j]}, placing ${arr[k]} at position $k',
-          currentPseudocodeLine: 9,
+          description:
+              '🔍 STEP: Both arrays have elements. Comparing leftArr[$i]=${leftArr[i]} vs rightArr[$j]=${rightArr[j]}',
+          currentPseudocodeLine: 11,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [k],
+          description: '❓ DECISION: Which is smaller? ${leftArr[i]} or ${rightArr[j]}?',
+          currentPseudocodeLine: 12,
         ),
       );
 
@@ -198,90 +236,129 @@ class MergeSort extends SortingAlgorithm {
         _steps.add(
           SortStep(
             array: List.from(arr),
-            comparing: [k],
-            description: '✅ ${leftArr[i]} ≤ ${rightArr[j]}: Tomando elemento del subarray izquierdo',
+            swapping: [k],
+            description: '⬅️ CHOICE: ${leftArr[i]} ≤ ${rightArr[j]}, so take from LEFT array',
             currentPseudocodeLine: 12,
           ),
         );
 
         arr[k] = leftArr[i];
-        i++;
 
         _steps.add(
           SortStep(
             array: List.from(arr),
             swapping: [k],
-            description: '📥 arr[$k] = ${leftArr[i - 1]}, incrementando i a $i',
+            description: '📥 PLACED: arr[$k] = ${arr[k]} (from left array, advance i: $i → ${i + 1})',
             currentPseudocodeLine: 13,
           ),
         );
+
+        i++;
       } else {
         _steps.add(
           SortStep(
             array: List.from(arr),
-            comparing: [k],
-            description: '✅ ${leftArr[i]} > ${rightArr[j]}: Tomando elemento del subarray derecho',
+            swapping: [k],
+            description: '➡️ CHOICE: ${rightArr[j]} < ${leftArr[i]}, so take from RIGHT array',
             currentPseudocodeLine: 14,
           ),
         );
 
         arr[k] = rightArr[j];
-        j++;
 
         _steps.add(
           SortStep(
             array: List.from(arr),
             swapping: [k],
-            description: '📥 arr[$k] = ${rightArr[j - 1]}, incrementando j a $j',
+            description: '📥 PLACED: arr[$k] = ${arr[k]} (from right array, advance j: $j → ${j + 1})',
             currentPseudocodeLine: 15,
           ),
         );
+
+        j++;
       }
 
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '➡️ ADVANCE: Move to next position k: $k → ${k + 1}',
+          currentPseudocodeLine: 16,
+        ),
+      );
+
       k++;
-      _steps.add(SortStep(array: List.from(arr), description: '📝 Incrementando k a $k', currentPseudocodeLine: 16));
     }
 
-    // Copiar elementos restantes del subarray izquierdo
+    // Handle remaining elements with detailed steps
+    if (i < leftArr.length) {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '📋 REMAINING: Right array exhausted. Copying remaining left elements...',
+          currentPseudocodeLine: 17,
+        ),
+      );
+    }
+
     while (i < leftArr.length) {
       _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: [k],
-          description: '📥 Copying remaining left element: ${arr[k]} at position $k',
-          currentPseudocodeLine: 10,
+          description: '⬅️ COPYING: Taking remaining leftArr[$i] = ${leftArr[i]}',
+          currentPseudocodeLine: 17,
         ),
       );
 
       arr[k] = leftArr[i];
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          swapping: [k],
+          description: '📥 PLACED: arr[$k] = ${arr[k]} (remaining from left)',
+          currentPseudocodeLine: 17,
+        ),
+      );
+
       i++;
       k++;
     }
 
-    // Copiar elementos restantes del subarray derecho
+    if (j < rightArr.length) {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '📋 REMAINING: Left array exhausted. Copying remaining right elements...',
+          currentPseudocodeLine: 17,
+        ),
+      );
+    }
+
     while (j < rightArr.length) {
       _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: [k],
-          description: '📥 Copying remaining right element: ${arr[k]} at position $k',
-          currentPseudocodeLine: 11,
+          description: '➡️ COPYING: Taking remaining rightArr[$j] = ${rightArr[j]}',
+          currentPseudocodeLine: 17,
         ),
       );
 
       arr[k] = rightArr[j];
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          swapping: [k],
+          description: '📥 PLACED: arr[$k] = ${arr[k]} (remaining from right)',
+          currentPseudocodeLine: 17,
+        ),
+      );
+
       j++;
       k++;
     }
-
-    _steps.add(
-      SortStep(
-        array: List.from(arr),
-        sorted: List.generate(right - left + 1, (i) => left + i),
-        description: '✅ Merge complete for range [$left, $right]',
-        currentPseudocodeLine: 12,
-      ),
-    );
   }
 
   @override

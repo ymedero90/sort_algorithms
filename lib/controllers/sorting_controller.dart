@@ -15,7 +15,8 @@ class SortingController extends ChangeNotifier {
   // Estado de la animación
   bool _isPlaying = false;
   bool _isPaused = false;
-  double _animationSpeed = 1.0;
+  double _animationSpeed = 0.5; // Velocidad por defecto más lenta
+  bool _isExecutingStep = false; // Nuevo flag para controlar ejecución
 
   // Configuración
   SortingAlgorithm? _selectedAlgorithm;
@@ -100,43 +101,66 @@ class SortingController extends ChangeNotifier {
     notifyListeners();
   }
 
+  // Debug flag - set to false to disable debug logging
+  static const bool _debugMode = false;
+
   // Animation Control
   void setAnimationSpeed(double speed) {
-    _animationSpeed = speed;
+    if (_debugMode) print('🎛️ Setting animation speed to: $speed');
+    _animationSpeed = speed.clamp(0.1, 2.0); // Limitar rango
     notifyListeners();
   }
 
   void startAnimation() {
-    if (_selectedAlgorithm != null && _steps.length == 1) {
-      _steps = SortingService.executeAlgorithm(_selectedAlgorithm!, _array);
+    if (_debugMode) {
+      print('▶️ Starting animation...');
+      print('📊 Current algorithm: ${_selectedAlgorithm?.name}');
+      print('📊 Current steps count: ${_steps.length}');
     }
+
+    if (_selectedAlgorithm != null && _steps.length == 1) {
+      if (_debugMode) print('🔄 Executing algorithm to generate steps...');
+      _steps = SortingService.executeAlgorithm(_selectedAlgorithm!, _array);
+      if (_debugMode) print('✅ Algorithm executed. Generated ${_steps.length} steps');
+    }
+
     _isPlaying = true;
     _isPaused = false;
+    _isExecutingStep = false; // Reset flag
+    if (_debugMode) print('✅ Animation started. Current step: $_currentStepIndex');
     notifyListeners();
   }
 
   void pauseAnimation() {
+    if (_debugMode) print('⏸️ Pausing animation at step $_currentStepIndex');
     _isPlaying = false;
     _isPaused = true;
+    _isExecutingStep = false; // Reset flag
     notifyListeners();
   }
 
   void resumeAnimation() {
+    if (_debugMode) print('▶️ Resuming animation from step $_currentStepIndex');
     _isPlaying = true;
     _isPaused = false;
+    _isExecutingStep = false; // Reset flag
     notifyListeners();
   }
 
   void stopAnimation() {
+    if (_debugMode) print('⏹️ Stopping animation');
     _isPlaying = false;
     _isPaused = false;
+    _isExecutingStep = false; // Reset flag
     notifyListeners();
   }
 
   void resetVisualization() {
+    if (_debugMode) print('🔄 Resetting visualization to step 0');
     _currentStepIndex = 0;
     _isPlaying = false;
     _isPaused = false;
+    _isExecutingStep = false; // Reset flag
     notifyListeners();
   }
 
@@ -144,21 +168,39 @@ class SortingController extends ChangeNotifier {
   void nextStep() {
     if (_currentStepIndex < _steps.length - 1) {
       _currentStepIndex++;
+      if (_debugMode) {
+        print('⏭️ Next step: $_currentStepIndex/${_steps.length}');
+        print('📝 Step description: ${_steps[_currentStepIndex].description}');
+      }
       notifyListeners();
+    } else {
+      if (_debugMode) print('🚫 Cannot go to next step: already at end');
     }
   }
 
   void previousStep() {
     if (_currentStepIndex > 0) {
       _currentStepIndex--;
+      if (_debugMode) {
+        print('⏮️ Previous step: $_currentStepIndex/${_steps.length}');
+        print('📝 Step description: ${_steps[_currentStepIndex].description}');
+      }
       notifyListeners();
+    } else {
+      if (_debugMode) print('🚫 Cannot go to previous step: already at beginning');
     }
   }
 
   void setCurrentStep(int index) {
     if (index >= 0 && index < _steps.length) {
+      if (_debugMode) {
+        print('🎯 Setting current step to: $index/${_steps.length}');
+        print('📝 Step description: ${_steps[_currentStepIndex].description}');
+      }
       _currentStepIndex = index;
       notifyListeners();
+    } else {
+      if (_debugMode) print('🚫 Invalid step index: $index (valid range: 0-${_steps.length - 1})');
     }
   }
 
@@ -211,20 +253,57 @@ class SortingController extends ChangeNotifier {
 
   // Animation Flow Control
   Future<void> executeAnimationStep() async {
-    if (_isPlaying && _currentStepIndex < _steps.length - 1) {
-      _currentStepIndex++;
-      notifyListeners();
-    } else if (_currentStepIndex >= _steps.length - 1) {
+    // Prevenir ejecuciones múltiples
+    if (_isExecutingStep) {
+      if (_debugMode) print('⚠️ Step execution already in progress, skipping');
+      return;
+    }
+
+    if (!_isPlaying) {
+      if (_debugMode) print('⏸️ Animation not playing, skipping step');
+      return;
+    }
+
+    if (_currentStepIndex >= _steps.length - 1) {
+      if (_debugMode) print('🏁 Animation completed: reached end of steps');
       stopAnimation();
+      return;
+    }
+
+    _isExecutingStep = true;
+
+    try {
+      _currentStepIndex++;
+      if (_debugMode) {
+        print('🎬 Animation step: $_currentStepIndex/${_steps.length}');
+        print('📝 Current step: ${_steps[_currentStepIndex].description}');
+      }
+      notifyListeners();
+    } finally {
+      _isExecutingStep = false;
     }
   }
 
   // Algorithm Execution
   void executeAlgorithm() {
     if (_selectedAlgorithm != null) {
+      if (_debugMode) {
+        print('🚀 Executing algorithm: ${_selectedAlgorithm!.name}');
+        print('📊 Input array: $_array');
+      }
+
       _steps = SortingService.executeAlgorithm(_selectedAlgorithm!, _array);
       _currentStepIndex = 0;
+
+      if (_debugMode) {
+        print('✅ Algorithm execution completed');
+        print('📈 Generated ${_steps.length} steps');
+        print('🎯 Reset to step 0');
+      }
+
       notifyListeners();
+    } else {
+      if (_debugMode) print('🚫 Cannot execute: no algorithm selected');
     }
   }
 }

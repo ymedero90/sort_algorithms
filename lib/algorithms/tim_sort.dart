@@ -3,14 +3,14 @@ import '../models/sorting_algorithm.dart';
 
 class TimSort extends SortingAlgorithm {
   List<SortStep> _steps = [];
-  static const int RUN = 32; // Tamaño fijo de run como en la implementación estándar
+  static const int RUN = 32;
 
   @override
   String get name => 'Tim Sort';
 
   @override
   String get description =>
-      'Algoritmo híbrido adaptativo que combina Merge Sort e Insertion Sort. Usado en Python y Java. Complejidad: O(n log n) - Estable';
+      'Hybrid sorting algorithm combining Merge Sort and Insertion Sort. Complexity: O(n log n) - Stable';
 
   @override
   String get timeComplexity => 'O(n log n)';
@@ -23,19 +23,19 @@ class TimSort extends SortingAlgorithm {
 
   @override
   List<String> get advantages => [
-    'Excelente rendimiento en datos parcialmente ordenados',
-    'Algoritmo estable',
-    'Adaptativo (O(n) en el mejor caso)',
-    'Usado en implementaciones reales (Python, Java)',
-    'Optimizado para patrones comunes',
+    'Excellent performance on partially ordered data',
+    'Stable algorithm',
+    'Adaptive (O(n) in the best case)',
+    'Used in real implementations (Python, Java)',
+    'Optimized for common patterns',
   ];
 
   @override
   List<String> get disadvantages => [
-    'Implementación compleja',
-    'Requiere memoria adicional O(n)',
-    'Overhead para arrays muy pequeños',
-    'Algoritmo sofisticado para casos simples',
+    'Complex implementation',
+    'Requires additional memory O(n)',
+    'Overhead for very small arrays',
+    'Sophisticated algorithm for simple cases',
   ];
 
   @override
@@ -58,17 +58,17 @@ class TimSort extends SortingAlgorithm {
 
   @override
   String getTimeComplexityExplanation() {
-    return 'O(n log n) en el peor caso, pero O(n) en el mejor caso cuando los datos están parcialmente ordenados. Identifica y aprovecha secuencias ya ordenadas (runs) para reducir el trabajo de fusión.';
+    return 'O(n log n) in the worst case, but O(n) in the best case when the data is partially ordered. Identifies and takes advantage of already ordered sequences (runs) to reduce the merge work.';
   }
 
   @override
   String getSpaceComplexityExplanation() {
-    return 'O(n) para el array auxiliar usado en las operaciones de merge, similar a Merge Sort tradicional.';
+    return 'O(n) for the auxiliary array used in the merge operations, similar to traditional Merge Sort.';
   }
 
   @override
   String getStabilityExplanation() {
-    return 'Es estable porque tanto Insertion Sort como Merge Sort son estables, y TimSort preserva cuidadosamente el orden relativo durante todas las operaciones.';
+    return 'It is stable because both Insertion Sort and Merge Sort are stable, and TimSort carefully preserves the relative order during all operations.';
   }
 
   @override
@@ -82,7 +82,7 @@ class TimSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 TimSort: Algoritmo híbrido con RUN fijo de $RUN elementos',
+        description: '🎯 TimSort: Hybrid algorithm with fixed RUN of $RUN elements',
         currentPseudocodeLine: 0,
       ),
     );
@@ -90,7 +90,7 @@ class TimSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '📏 RUN = $RUN (tamaño fijo de subarray para Insertion Sort)',
+        description: '📏 RUN = $RUN (fixed size subarray for Insertion Sort)',
         currentPseudocodeLine: 1,
       ),
     );
@@ -103,7 +103,7 @@ class TimSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: List.generate(end - i + 1, (index) => i + index),
-          description: '🔧 Insertion Sort en run [$i, $end] (tamaño ${end - i + 1})',
+          description: '🔧 Insertion Sort on run [$i, $end] (size ${end - i + 1})',
           currentPseudocodeLine: 2,
         ),
       );
@@ -114,7 +114,7 @@ class TimSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           sorted: List.generate(end - i + 1, (index) => i + index),
-          description: '✅ Run [$i, $end] ordenado con Insertion Sort',
+          description: '✅ Run [$i, $end] sorted with Insertion Sort',
           currentPseudocodeLine: 4,
         ),
       );
@@ -125,7 +125,7 @@ class TimSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '📐 Iniciando fase de merge con size = $size',
+        description: '📐 Starting merge phase with size = $size',
         currentPseudocodeLine: 5,
       ),
     );
@@ -134,7 +134,7 @@ class TimSort extends SortingAlgorithm {
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '🔀 Merge phase: fusionando runs de tamaño $size',
+          description: '🔀 Merge phase: merging runs of size $size',
           currentPseudocodeLine: 6,
         ),
       );
@@ -146,7 +146,7 @@ class TimSort extends SortingAlgorithm {
         _steps.add(
           SortStep(
             array: List.from(arr),
-            description: '📍 Calculando posiciones: left=$left, mid=$mid, right=$right',
+            description: '📍 Calculating positions: left=$left, mid=$mid, right=$right',
             currentPseudocodeLine: 8,
           ),
         );
@@ -156,7 +156,7 @@ class TimSort extends SortingAlgorithm {
             SortStep(
               array: List.from(arr),
               comparing: List.generate(right - left + 1, (i) => left + i),
-              description: '🔀 Fusionando runs: [$left..$mid] con [${mid + 1}..$right]',
+              description: '🔀 Merging runs: [$left..$mid] with [${mid + 1}..$right]',
               currentPseudocodeLine: 10,
             ),
           );
@@ -167,7 +167,7 @@ class TimSort extends SortingAlgorithm {
             SortStep(
               array: List.from(arr),
               sorted: List.generate(right - left + 1, (i) => left + i),
-              description: '✅ Merge completado: [$left..$right] (tamaño ${right - left + 1})',
+              description: '✅ Merge completed: [$left..$right] (size ${right - left + 1})',
               currentPseudocodeLine: 11,
             ),
           );
@@ -176,7 +176,7 @@ class TimSort extends SortingAlgorithm {
 
       size = 2 * size;
       _steps.add(
-        SortStep(array: List.from(arr), description: '📈 Duplicando tamaño: size = $size', currentPseudocodeLine: 12),
+        SortStep(array: List.from(arr), description: '📈 Doubling size: size = $size', currentPseudocodeLine: 12),
       );
     }
 
@@ -184,7 +184,7 @@ class TimSort extends SortingAlgorithm {
       SortStep(
         array: List.from(arr),
         sorted: List.generate(n, (index) => index),
-        description: '🎉 ¡TimSort completado! Algoritmo híbrido exitoso',
+        description: '🎉 TimSort completed! Hybrid algorithm successful',
         currentPseudocodeLine: 13,
       ),
     );
@@ -206,25 +206,13 @@ class TimSort extends SortingAlgorithm {
   }
 
   void _merge(List<int> arr, int left, int mid, int right) {
-    // Create temporary arrays for left and right subarrays
-    int len1 = mid - left + 1;
-    int len2 = right - mid;
+    List<int> leftArr = arr.sublist(left, mid + 1);
+    List<int> rightArr = arr.sublist(mid + 1, right + 1);
 
-    List<int> leftArr = [];
-    List<int> rightArr = [];
-
-    // Copy data to temporary arrays
-    for (int i = 0; i < len1; i++) {
-      leftArr.add(arr[left + i]);
-    }
-    for (int i = 0; i < len2; i++) {
-      rightArr.add(arr[mid + 1 + i]);
-    }
-
-    // Merge the temporary arrays back into arr[left..right]
     int i = 0, j = 0, k = left;
 
-    while (i < len1 && j < len2) {
+    // Merge elements from leftArr and rightArr back into arr
+    while (i < leftArr.length && j < rightArr.length) {
       if (leftArr[i] <= rightArr[j]) {
         arr[k] = leftArr[i];
         i++;
@@ -236,14 +224,14 @@ class TimSort extends SortingAlgorithm {
     }
 
     // Copy remaining elements of leftArr, if any
-    while (i < len1) {
+    while (i < leftArr.length) {
       arr[k] = leftArr[i];
       i++;
       k++;
     }
 
     // Copy remaining elements of rightArr, if any
-    while (j < len2) {
+    while (j < rightArr.length) {
       arr[k] = rightArr[j];
       j++;
       k++;

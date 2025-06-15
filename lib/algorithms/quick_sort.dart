@@ -64,18 +64,26 @@ class QuickSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Quick Sort: Divide-and-conquer with pivot partitioning',
+        description: '🎯 Quick Sort: Starting divide-and-conquer with pivot partitioning',
         currentPseudocodeLine: 0,
       ),
     );
 
-    _quickSort(arr, 0, arr.length - 1);
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 Strategy: Choose pivot, partition array, then recursively sort subarrays',
+        currentPseudocodeLine: 0,
+      ),
+    );
+
+    _quickSort(arr, 0, arr.length - 1, 0);
 
     _steps.add(
       SortStep(
         array: List.from(arr),
         sorted: List.generate(arr.length, (index) => index),
-        description: '🎉 Quick Sort completed! All subarrays have been partitioned and sorted',
+        description: '🎉 Quick Sort completed! All partitions have been sorted',
         currentPseudocodeLine: 5,
       ),
     );
@@ -83,11 +91,21 @@ class QuickSort extends SortingAlgorithm {
     return _steps;
   }
 
-  void _quickSort(List<int> arr, int low, int high) {
+  void _quickSort(List<int> arr, int low, int high, int depth) {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🔄 QuickSort called for range [$low, $high]',
+        comparing: List.generate(high - low + 1, (i) => low + i),
+        description: '🔍 ANALYZE: QuickSort called for range [$low..$high] (depth $depth)',
+        currentPseudocodeLine: 1,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        comparing: List.generate(high - low + 1, (i) => low + i),
+        description: '❓ CHECK: Is $low < $high? ${low < high ? "Yes - can partition" : "No - base case reached"}',
         currentPseudocodeLine: 1,
       ),
     );
@@ -96,7 +114,17 @@ class QuickSort extends SortingAlgorithm {
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '📍 Partitioning range [$low, $high] with pivot ${arr[high]}',
+          comparing: List.generate(high - low + 1, (i) => low + i),
+          description: '✅ CONDITION MET: Range has more than one element - proceeding to partition',
+          currentPseudocodeLine: 2,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [high],
+          description: '🎯 PARTITION START: Finding correct position for pivot in range [$low..$high]',
           currentPseudocodeLine: 2,
         ),
       );
@@ -107,42 +135,79 @@ class QuickSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           sorted: [pi],
-          description: '📍 Pivot in final position: pi = $pi. Dividing into subarrays',
-          currentPseudocodeLine: 3,
+          description: '✅ PARTITION COMPLETE: Pivot is now in final position $pi',
+          currentPseudocodeLine: 2,
         ),
       );
 
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '🔄 Recursively sorting left subarray [$low, ${pi - 1}]',
+          comparing: List.generate(pi - low, (i) => low + i),
+          description: '⬅️ DIVIDE: Recursively sorting LEFT subarray [$low..${pi - 1}] (depth ${depth + 1})',
           currentPseudocodeLine: 3,
         ),
       );
 
-      _quickSort(arr, low, pi - 1);
-      _quickSort(arr, pi + 1, high);
+      _quickSort(arr, low, pi - 1, depth + 1);
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: List.generate(high - pi, (i) => pi + 1 + i),
+          description: '➡️ DIVIDE: Recursively sorting RIGHT subarray [${pi + 1}..$high] (depth ${depth + 1})',
+          currentPseudocodeLine: 4,
+        ),
+      );
+
+      _quickSort(arr, pi + 1, high, depth + 1);
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '🔄 CONQUER: Both subarrays of range [$low..$high] are now sorted',
+          currentPseudocodeLine: 5,
+        ),
+      );
+    } else {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          sorted: low <= high ? [low] : [],
+          description:
+              '✅ BASE CASE: Range [$low..$high] has ${low == high ? "one element" : "no elements"} - already sorted',
+          currentPseudocodeLine: 1,
+        ),
+      );
     }
   }
 
   int _partition(List<int> arr, int low, int high) {
     int pivot = arr[high];
-    int i = low - 1; // Definir la variable i
+    int i = low - 1;
 
     _steps.add(
       SortStep(
         array: List.from(arr),
         comparing: [high],
-        description: '📍 Pivot selected: arr[$high] = ${arr[high]}',
-        currentPseudocodeLine: 6,
+        description: '📍 PIVOT SELECTION: Using last element arr[$high] = $pivot as pivot',
+        currentPseudocodeLine: 7,
       ),
     );
 
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '📝 Initializing i = ${low - 1} (index of smaller element)',
-        currentPseudocodeLine: 7,
+        description: '📝 INITIALIZE: i = ${low - 1} (index of last element smaller than pivot)',
+        currentPseudocodeLine: 8,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '🎯 GOAL: Rearrange so elements ≤ $pivot are on left, elements > $pivot are on right',
+        currentPseudocodeLine: 9,
       ),
     );
 
@@ -151,8 +216,8 @@ class QuickSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: [j, high],
-          description: '🔍 Comparing arr[$j] = ${arr[j]} with pivot ${arr[high]}',
-          currentPseudocodeLine: 8,
+          description: '🔍 EXAMINE: arr[$j] = ${arr[j]} - comparing with pivot $pivot',
+          currentPseudocodeLine: 10,
         ),
       );
 
@@ -160,7 +225,7 @@ class QuickSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: [j, high],
-          description: '❓ Checking condition: arr[$j] = ${arr[j]} <= pivot $pivot',
+          description: '❓ QUESTION: Is ${arr[j]} ≤ $pivot?',
           currentPseudocodeLine: 10,
         ),
       );
@@ -171,12 +236,21 @@ class QuickSort extends SortingAlgorithm {
           SortStep(
             array: List.from(arr),
             comparing: [i, j],
-            description: '✅ ${arr[j]} ≤ $pivot: Incrementing i to $i',
+            description: '✅ YES: ${arr[j]} ≤ $pivot - incrementing i to $i (expanding smaller section)',
             currentPseudocodeLine: 11,
           ),
         );
 
         if (i != j) {
+          _steps.add(
+            SortStep(
+              array: List.from(arr),
+              swapping: [i, j],
+              description: '🔄 SWAP NEEDED: Moving ${arr[j]} to position $i in smaller section',
+              currentPseudocodeLine: 12,
+            ),
+          );
+
           int temp = arr[i];
           arr[i] = arr[j];
           arr[j] = temp;
@@ -185,13 +259,58 @@ class QuickSort extends SortingAlgorithm {
             SortStep(
               array: List.from(arr),
               swapping: [i, j],
-              description: '🔄 Element ${arr[i]} ≤ pivot, swapping with position $i',
+              description: '✅ SWAPPED: arr[$i] = ${arr[i]}, arr[$j] = ${arr[j]}',
+              currentPseudocodeLine: 12,
+            ),
+          );
+        } else {
+          _steps.add(
+            SortStep(
+              array: List.from(arr),
+              comparing: [i],
+              description: '✓ NO SWAP: Element ${arr[j]} already in correct position $i',
               currentPseudocodeLine: 12,
             ),
           );
         }
+      } else {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            comparing: [j],
+            description: '❌ NO: ${arr[j]} > $pivot - leaving in greater section (no action needed)',
+            currentPseudocodeLine: 10,
+          ),
+        );
+      }
+
+      if (j < high - 1) {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '➡️ CONTINUE: Moving to next element j = ${j + 1}',
+            currentPseudocodeLine: 9,
+          ),
+        );
       }
     }
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '🏁 SCAN COMPLETE: All elements examined, now placing pivot in final position',
+        currentPseudocodeLine: 13,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        swapping: [i + 1, high],
+        description: '🎯 FINAL SWAP: Moving pivot $pivot to position ${i + 1} (between smaller and larger elements)',
+        currentPseudocodeLine: 13,
+      ),
+    );
 
     int temp = arr[i + 1];
     arr[i + 1] = arr[high];
@@ -200,18 +319,9 @@ class QuickSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        swapping: [i + 1, high],
-        description: '🎯 Placing pivot ${arr[high]} in correct position ${i + 1}',
-        currentPseudocodeLine: 10,
-      ),
-    );
-
-    _steps.add(
-      SortStep(
-        array: List.from(arr),
         sorted: [i + 1],
-        description: '✅ Partition complete: Pivot ${arr[i + 1]} is in final position ${i + 1}',
-        currentPseudocodeLine: 11,
+        description: '✅ PIVOT PLACED: ${arr[i + 1]} is now in its final sorted position ${i + 1}',
+        currentPseudocodeLine: 14,
       ),
     );
 

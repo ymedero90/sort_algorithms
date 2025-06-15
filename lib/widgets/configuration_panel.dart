@@ -198,19 +198,33 @@ class ConfigurationPanel extends StatelessWidget {
   Widget _buildSpeedControl() {
     return _buildSidebarSection(
       'Speed: ${controller.animationSpeed.toStringAsFixed(1)}x',
-      SliderTheme(
-        data: SliderThemeData(
-          activeTrackColor: AppTheme.primary,
-          thumbColor: AppTheme.primary,
-          inactiveTrackColor: AppTheme.divider,
-        ),
-        child: Slider(
-          value: controller.animationSpeed,
-          min: 0.5,
-          max: 3.0,
-          divisions: 5,
-          onChanged: controller.updateAnimationSpeed,
-        ),
+      Column(
+        children: [
+          SliderTheme(
+            data: SliderThemeData(
+              activeTrackColor: AppTheme.primary,
+              thumbColor: AppTheme.primary,
+              inactiveTrackColor: AppTheme.divider,
+              trackHeight: 3,
+              thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 8),
+            ),
+            child: Slider(
+              value: controller.animationSpeed,
+              min: 0.1, // Muy lento
+              max: 2.0, // Rápido pero controlado
+              divisions: 38, // Más precisión (0.1, 0.15, 0.2, ..., 2.0)
+              onChanged: controller.updateAnimationSpeed,
+            ),
+          ),
+          // Indicadores de velocidad
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text('Slow', style: TextStyle(color: AppTheme.textSecondary, fontSize: 9)),
+              Text('Fast', style: TextStyle(color: AppTheme.textSecondary, fontSize: 9)),
+            ],
+          ),
+        ],
       ),
     );
   }

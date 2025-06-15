@@ -75,7 +75,16 @@ class InsertionSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Insertion Sort: Build sorted array one element at a time',
+        description: '🎯 Insertion Sort: Building sorted array one element at a time',
+        currentPseudocodeLine: 0,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        sorted: [0],
+        description: '📋 Strategy: First element arr[0] = ${arr[0]} is already "sorted" by itself',
         currentPseudocodeLine: 0,
       ),
     );
@@ -89,7 +98,7 @@ class InsertionSort extends SortingAlgorithm {
           array: List.from(arr),
           comparing: [i],
           sorted: List.generate(i, (index) => index),
-          description: '🔄 Iteration $i: Inserting element ${arr[i]} into sorted portion',
+          description: '🔄 ITERATION $i: Taking element arr[$i] = $key to insert into sorted portion [0..${i - 1}]',
           currentPseudocodeLine: 1,
         ),
       );
@@ -98,7 +107,7 @@ class InsertionSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: [i],
-          description: '📝 key = arr[$i] = $key',
+          description: '📝 STORE: key = arr[$i] = $key (element to be positioned)',
           currentPseudocodeLine: 2,
         ),
       );
@@ -106,33 +115,60 @@ class InsertionSort extends SortingAlgorithm {
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '📝 j = ${i - 1} (index to find position)',
+          description: '📝 INITIALIZE: j = ${i - 1} (starting from end of sorted portion)',
           currentPseudocodeLine: 3,
         ),
       );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [i],
+          description: '🎯 GOAL: Find correct position for key = $key in sorted portion [0..${i - 1}]',
+          currentPseudocodeLine: 4,
+        ),
+      );
+
+      bool foundPosition = false;
 
       while (j >= 0 && arr[j] > key) {
         _steps.add(
           SortStep(
             array: List.from(arr),
             comparing: [j, i],
-            description: '🔍 Comparing arr[$j] = ${arr[j]} > key = $key',
+            description: '🔍 COMPARE: arr[$j] = ${arr[j]} > key = $key? Yes - need to shift right',
             currentPseudocodeLine: 4,
           ),
         );
 
-        arr[j + 1] = arr[j];
         _steps.add(
           SortStep(
             array: List.from(arr),
             swapping: [j, j + 1],
-            description: '➡️ Shifting ${arr[j + 1]} one position to the right',
+            description: '➡️ SHIFT: Moving ${arr[j]} from position $j to position ${j + 1}',
+            currentPseudocodeLine: 5,
+          ),
+        );
+
+        arr[j + 1] = arr[j];
+
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            swapping: [j + 1],
+            description: '✅ SHIFTED: arr[${j + 1}] = ${arr[j + 1]} (made space for key)',
             currentPseudocodeLine: 5,
           ),
         );
 
         j = j - 1;
-        _steps.add(SortStep(array: List.from(arr), description: '📝 j = j - 1 = $j', currentPseudocodeLine: 6));
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '⬅️ MOVE LEFT: j = $j (checking previous element)',
+            currentPseudocodeLine: 6,
+          ),
+        );
       }
 
       if (j >= 0) {
@@ -140,22 +176,53 @@ class InsertionSort extends SortingAlgorithm {
           SortStep(
             array: List.from(arr),
             comparing: [j],
-            description: '🔍 arr[$j] = ${arr[j]} <= key = $key, position found',
+            description: '🔍 COMPARE: arr[$j] = ${arr[j]} ≤ key = $key - found correct position!',
             currentPseudocodeLine: 4,
           ),
         );
+        foundPosition = true;
+      } else {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '🔍 BOUNDARY: Reached beginning of array - key goes at position 0',
+            currentPseudocodeLine: 4,
+          ),
+        );
+        foundPosition = true;
       }
 
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          swapping: [j + 1],
+          description: '📍 POSITION FOUND: Inserting key = $key at position ${j + 1}',
+          currentPseudocodeLine: 7,
+        ),
+      );
+
       arr[j + 1] = key;
+
       _steps.add(
         SortStep(
           array: List.from(arr),
           swapping: [j + 1],
           sorted: List.generate(i + 1, (index) => index),
-          description: '✅ Inserting key = $key at position ${j + 1}',
+          description: '✅ INSERTED: key = $key placed at arr[${j + 1}] - sorted portion now [0..$i]',
           currentPseudocodeLine: 7,
         ),
       );
+
+      if (i < n - 1) {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            sorted: List.generate(i + 1, (index) => index),
+            description: '📈 PROGRESS: Sorted portion expanded to [0..$i], next element: arr[${i + 1}] = ${arr[i + 1]}',
+            currentPseudocodeLine: 1,
+          ),
+        );
+      }
     }
 
     _steps.add(

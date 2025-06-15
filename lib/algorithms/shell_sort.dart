@@ -9,10 +9,10 @@ class ShellSort extends SortingAlgorithm {
 
   @override
   String get description =>
-      'Mejora de Insertion Sort usando secuencia de gaps. Reduce elementos distantes primero. Complejidad: O(n^1.5) - No estable';
+      'Algoritmo de ordenamiento que utiliza una secuencia de gaps para ordenar elementos. Complejidad: O(n log² n) - Inestable';
 
   @override
-  String get timeComplexity => 'O(n^1.5)';
+  String get timeComplexity => 'O(n log² n)';
 
   @override
   String get spaceComplexity => 'O(1)';
@@ -55,7 +55,7 @@ class ShellSort extends SortingAlgorithm {
 
   @override
   String getTimeComplexityExplanation() {
-    return 'O(n^1.5) en promedio con la secuencia de gaps clásica (n/2, n/4, ..., 1). La complejidad exacta depende de la secuencia de gaps utilizada. Con secuencias optimizadas puede llegar a O(n log² n), pero nunca mejor que O(n log n).';
+    return 'O(n log² n) en promedio con la secuencia de gaps clásica (n/2, n/4, ..., 1). La complejidad exacta depende de la secuencia de gaps utilizada. Con secuencias optimizadas puede llegar a O(n log n), pero nunca mejor que O(n log n).';
   }
 
   @override
@@ -77,19 +77,34 @@ class ShellSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Shell Sort: Insertion Sort mejorado con secuencia de gaps',
+        description: '🎯 Shell Sort: Improved insertion sort using gap sequence',
         currentPseudocodeLine: 0,
       ),
     );
 
-    int gap = n ~/ 2;
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 Strategy: Sort elements at gap intervals, then reduce gap until gap = 1',
+        currentPseudocodeLine: 1,
+      ),
+    );
 
-    while (gap > 0) {
+    // Comenzar con un gran gap, luego reducir el gap
+    for (int gap = n ~/ 2; gap > 0; gap ~/= 2) {
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '📏 Gap actual: $gap - Ordenando elementos separados por esta distancia',
+          description: '📏 NEW GAP: Current gap = $gap - will sort elements separated by this distance',
           currentPseudocodeLine: 2,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '🎯 GAP SORTING: Using insertion sort on gap-separated subsequences',
+          currentPseudocodeLine: 3,
         ),
       );
 
@@ -101,60 +116,146 @@ class ShellSort extends SortingAlgorithm {
           SortStep(
             array: List.from(arr),
             comparing: [i],
-            description: '🔄 Elemento arr[$i] = $temp, buscando posición con gap $gap',
-            currentPseudocodeLine: 3,
+            description: '🔄 ELEMENT: Taking arr[$i] = $temp to insert in gap-$gap sequence',
+            currentPseudocodeLine: 4,
           ),
         );
 
-        while (j >= gap && arr[j - gap] > temp) {
-          _steps.add(
-            SortStep(
-              array: List.from(arr),
-              comparing: [j - gap, j],
-              description: '🔍 Comparando arr[${j - gap}] = ${arr[j - gap]} > temp = $temp',
-              currentPseudocodeLine: 6,
-            ),
-          );
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            comparing: [i],
+            description: '📝 STORE: temp = arr[$i] = $temp (element to be positioned)',
+            currentPseudocodeLine: 4,
+          ),
+        );
 
-          arr[j] = arr[j - gap];
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '📝 INITIALIZE: j = $i (starting position for comparison)',
+            currentPseudocodeLine: 5,
+          ),
+        );
+
+        bool firstComparison = true;
+
+        while (j >= gap && arr[j - gap] > temp) {
+          if (firstComparison) {
+            _steps.add(
+              SortStep(
+                array: List.from(arr),
+                comparing: [j - gap, i],
+                description: '🔍 GAP COMPARE: arr[${j - gap}] = ${arr[j - gap]} > temp = $temp? (gap = $gap)',
+                currentPseudocodeLine: 6,
+              ),
+            );
+            firstComparison = false;
+          } else {
+            _steps.add(
+              SortStep(
+                array: List.from(arr),
+                comparing: [j - gap, i],
+                description: '🔍 CONTINUE: arr[${j - gap}] = ${arr[j - gap]} > temp = $temp? (gap = $gap)',
+                currentPseudocodeLine: 6,
+              ),
+            );
+          }
+
           _steps.add(
             SortStep(
               array: List.from(arr),
               swapping: [j - gap, j],
-              description: '➡️ Moviendo ${arr[j]} hacia adelante (gap $gap)',
+              description: '➡️ SHIFT: Moving ${arr[j - gap]} from position ${j - gap} to position $j (gap shift)',
+              currentPseudocodeLine: 7,
+            ),
+          );
+
+          arr[j] = arr[j - gap];
+
+          _steps.add(
+            SortStep(
+              array: List.from(arr),
+              swapping: [j],
+              description: '✅ SHIFTED: arr[$j] = ${arr[j]} (made space for temp)',
               currentPseudocodeLine: 7,
             ),
           );
 
           j -= gap;
+          _steps.add(
+            SortStep(
+              array: List.from(arr),
+              description: '⬅️ MOVE BACK: j = $j (checking element $gap positions back)',
+              currentPseudocodeLine: 8,
+            ),
+          );
         }
 
-        arr[j] = temp;
+        if (j >= gap) {
+          _steps.add(
+            SortStep(
+              array: List.from(arr),
+              comparing: [j - gap],
+              description: '🔍 FOUND POSITION: arr[${j - gap}] = ${arr[j - gap]} ≤ temp = $temp',
+              currentPseudocodeLine: 6,
+            ),
+          );
+        } else {
+          _steps.add(
+            SortStep(
+              array: List.from(arr),
+              description: '🔍 BOUNDARY: Reached beginning of gap sequence',
+              currentPseudocodeLine: 6,
+            ),
+          );
+        }
+
         _steps.add(
           SortStep(
             array: List.from(arr),
             swapping: [j],
-            description: '✅ Insertando $temp en posición $j',
+            description: '📍 INSERT: Placing temp = $temp at position $j in gap-$gap sequence',
+            currentPseudocodeLine: 9,
+          ),
+        );
+
+        arr[j] = temp;
+
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            swapping: [j],
+            description: '✅ PLACED: temp = $temp inserted at arr[$j] in gap-$gap sorted sequence',
             currentPseudocodeLine: 9,
           ),
         );
       }
 
-      gap ~/= 2;
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '📉 Reduciendo gap a ${gap > 0 ? gap : "terminado"}',
+          description: '✅ GAP COMPLETE: All gap-$gap subsequences are now sorted',
           currentPseudocodeLine: 10,
         ),
       );
+
+      if (gap > 1) {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '📉 REDUCE GAP: Next gap = ${gap ~/ 2} (halving the gap)',
+            currentPseudocodeLine: 10,
+          ),
+        );
+      }
     }
 
     _steps.add(
       SortStep(
         array: List.from(arr),
         sorted: List.generate(n, (index) => index),
-        description: '🎉 ¡Shell Sort completado! Todos los gaps procesados',
+        description: '🎉 Shell Sort completed! Final gap-1 pass finished - array is fully sorted',
         currentPseudocodeLine: 11,
       ),
     );

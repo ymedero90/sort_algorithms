@@ -25,6 +25,9 @@ class _SortingVisualizerPageState extends State<SortingVisualizerPage> with Tick
   late InformationController _informationController;
   late AnimationController _pulseController;
 
+  // Control de animación
+  bool _isAnimationRunning = false;
+
   @override
   void initState() {
     super.initState();
@@ -46,26 +49,41 @@ class _SortingVisualizerPageState extends State<SortingVisualizerPage> with Tick
   }
 
   void _onAnimationStateChanged() {
-    if (_sortingController.isPlaying) {
+    if (_sortingController.isPlaying && !_isAnimationRunning) {
       _pulseController.repeat();
       _runAnimation();
-    } else {
+    } else if (!_sortingController.isPlaying) {
       _pulseController.stop();
+      _isAnimationRunning = false;
     }
   }
 
   void _runAnimation() async {
-    while (_sortingController.isPlaying) {
-      await Future.delayed(Duration(milliseconds: (1000 / _sortingController.animationSpeed).round()));
+    if (_isAnimationRunning) return; // Prevenir múltiples animaciones
 
-      if (_sortingController.isPlaying) {
+    _isAnimationRunning = true;
+
+    while (_sortingController.isPlaying && _isAnimationRunning && mounted) {
+      // Calcular delay basado en la velocidad
+      int delayMs = (1500 / _sortingController.animationSpeed).round().clamp(100, 3000);
+
+      // Esperar el delay completo antes de continuar
+      await Future.delayed(Duration(milliseconds: delayMs));
+
+      // Verificar si aún estamos en modo reproducción y montados
+      if (_sortingController.isPlaying && _isAnimationRunning && mounted) {
         await _sortingController.executeAnimationStep();
+      } else {
+        break;
       }
     }
+
+    _isAnimationRunning = false;
   }
 
   @override
   void dispose() {
+    _isAnimationRunning = false;
     _sortingController.removeListener(_onAnimationStateChanged);
     _pulseController.dispose();
     _configController.dispose();

@@ -84,8 +84,16 @@ class RadixSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Radix Sort: Ordenamiento por dígitos (LSD - Least Significant Digit)',
+        description: '🎯 Radix Sort: Non-comparative sorting by processing digits',
         currentPseudocodeLine: 0,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 Strategy: Sort by each digit position using stable counting sort',
+        currentPseudocodeLine: 1,
       ),
     );
 
@@ -95,30 +103,56 @@ class RadixSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🔍 Número máximo encontrado: $max (determina número de dígitos)',
+        description: '🔍 ANALYSIS: Maximum number is $max - determines number of digit positions',
         currentPseudocodeLine: 1,
+      ),
+    );
+
+    int digitCount = max.toString().length;
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📊 DIGITS: Maximum has $digitCount digits - will process $digitCount passes',
+        currentPseudocodeLine: 2,
       ),
     );
 
     // Do counting sort for every digit
     for (int exp = 1; max ~/ exp > 0; exp *= 10) {
-      int digit = math.log(exp) ~/ math.log(10) + 1;
+      int digitPosition = math.log(exp) ~/ math.log(10) + 1;
+
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '🔢 Procesando dígito $digit (posición $exp): Ordenando por dígito desde la derecha',
+          description: '🔢 PASS $digitPosition: Processing digit at position $digitPosition (units place × $exp)',
           currentPseudocodeLine: 2,
         ),
       );
 
-      _countingSort(arr, exp);
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '📝 EXTRACTING: Getting digit at position $digitPosition from each number',
+          currentPseudocodeLine: 3,
+        ),
+      );
+
+      _countingSort(arr, exp, digitPosition);
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '✅ PASS COMPLETE: Array sorted by digit position $digitPosition',
+          currentPseudocodeLine: 3,
+        ),
+      );
     }
 
     _steps.add(
       SortStep(
         array: List.from(arr),
         sorted: List.generate(arr.length, (index) => index),
-        description: '🎉 ¡Radix Sort completado! Todos los dígitos procesados',
+        description: '🎉 Radix Sort completed! All digit positions processed',
         currentPseudocodeLine: 4,
       ),
     );
@@ -126,7 +160,7 @@ class RadixSort extends SortingAlgorithm {
     return _steps;
   }
 
-  void _countingSort(List<int> arr, int exp) {
+  void _countingSort(List<int> arr, int exp, int digitPosition) {
     int n = arr.length;
     List<int> output = List.filled(n, 0);
     List<int> count = List.filled(10, 0);
@@ -134,8 +168,16 @@ class RadixSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '📊 Iniciando counting sort para dígito en posición $exp',
-        currentPseudocodeLine: 6,
+        description: '📊 COUNTING SORT: Stable sort for digit position $digitPosition',
+        currentPseudocodeLine: 7,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 INITIALIZE: Creating count array for digits 0-9',
+        currentPseudocodeLine: 7,
       ),
     );
 
@@ -148,13 +190,19 @@ class RadixSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: [i],
-          description: '🔢 arr[$i] = ${arr[i]}, dígito en posición $exp: $digit',
-          currentPseudocodeLine: 8,
+          description: '🔢 COUNT: arr[$i] = ${arr[i]} → digit = $digit (count[$digit] = ${count[digit]})',
+          currentPseudocodeLine: 9,
         ),
       );
     }
 
-    _steps.add(SortStep(array: List.from(arr), description: '📈 Conteo de dígitos: $count', currentPseudocodeLine: 10));
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📈 COUNT ARRAY: Digit frequencies: $count',
+        currentPseudocodeLine: 11,
+      ),
+    );
 
     // Change count[i] so that count[i] now contains actual position of this digit in output[]
     for (int i = 1; i < 10; i++) {
@@ -162,26 +210,39 @@ class RadixSort extends SortingAlgorithm {
     }
 
     _steps.add(
-      SortStep(array: List.from(arr), description: '📐 Posiciones acumuladas: $count', currentPseudocodeLine: 11),
+      SortStep(
+        array: List.from(arr),
+        description: '📐 CUMULATIVE: Position array: $count (ending positions for each digit)',
+        currentPseudocodeLine: 12,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📥 PLACEMENT: Building sorted array from right to left (for stability)',
+        currentPseudocodeLine: 13,
+      ),
     );
 
     // Build the output array
     for (int i = n - 1; i >= 0; i--) {
       int digit = (arr[i] ~/ exp) % 10;
-      output[count[digit] - 1] = arr[i];
+      int position = count[digit] - 1;
+      output[position] = arr[i];
       count[digit]--;
 
       _steps.add(
         SortStep(
           array: List.from(arr),
           swapping: [i],
-          description: '📥 Colocando ${arr[i]} en posición ${count[digit]} (dígito $digit)',
-          currentPseudocodeLine: 13,
+          description: '📥 PLACE: ${arr[i]} (digit $digit) → position $position in output',
+          currentPseudocodeLine: 15,
         ),
       );
     }
 
-    // Copy the output array to arr[], so that arr[] now contains sorted numbers according to current digit
+    // Copy the output array to arr[]
     for (int i = 0; i < n; i++) {
       arr[i] = output[i];
     }
@@ -189,7 +250,7 @@ class RadixSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '✅ Counting sort completado para dígito en posición $exp',
+        description: '🔄 COPY BACK: Stable sort for digit position $digitPosition complete',
         currentPseudocodeLine: 17,
       ),
     );

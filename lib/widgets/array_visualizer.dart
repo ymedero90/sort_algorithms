@@ -15,7 +15,10 @@ class ArrayVisualizer extends StatefulWidget {
 class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderStateMixin {
   late Animation<double> _pulseAnimation;
   List<int> _previousActiveElements = [];
-  final List<String> _actionHistory = []; // Historial de acciones
+  final List<String> _actionHistory = [];
+
+  // Debug flag - set to false to disable debug logging
+  static const bool _debugMode = false;
 
   @override
   void initState() {
@@ -35,13 +38,20 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
     super.didUpdateWidget(oldWidget);
 
     if (oldWidget.step != widget.step) {
-      // Limpiar historial si:
-      // 1. Es el paso inicial (contiene "Array inicial generado")
-      // 2. O si es el primer paso de un algoritmo (currentPseudocodeLine == 0 y no es paso inicial)
+      if (_debugMode) {
+        print('\n🎨 ArrayVisualizer: Step changed');
+        print('📊 New step array: ${widget.step.array}');
+        print('📝 New step description: ${widget.step.description}');
+      }
+
+      // Clear history if needed
       if (widget.step.description.contains('Array inicial generado') ||
+          widget.step.description.contains('Initial array generated') ||
           (widget.step.currentPseudocodeLine == 0 &&
               !widget.step.description.contains('Array inicial generado') &&
+              !widget.step.description.contains('Initial array generated') &&
               _actionHistory.isNotEmpty)) {
+        if (_debugMode) print('🗑️ Clearing action history (new algorithm or initial step)');
         setState(() {
           _actionHistory.clear();
         });
@@ -54,35 +64,35 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
 
   void _updateActiveElements() {
     _previousActiveElements = [...widget.step.swapping, ...widget.step.comparing];
+    if (_debugMode) print('🎯 Updated active elements: $_previousActiveElements');
   }
 
   void _updateActionHistory() {
-    // Agregar la nueva descripción al historial sin límite
     if (widget.step.description.isNotEmpty &&
         (_actionHistory.isEmpty || _actionHistory.last != widget.step.description)) {
+      if (_debugMode) print('📝 Adding to history: ${widget.step.description}');
       setState(() {
         _actionHistory.add(widget.step.description);
-        // Eliminamos la limitación del historial
       });
+      if (_debugMode) print('📈 History now has ${_actionHistory.length} items');
     }
   }
 
   Color _getBarColor(int index) {
-    // Prioridad: ordenado primero, luego intercambio, luego comparación
     if (widget.step.sorted.contains(index)) {
-      return const Color(0xFF4EC9B0); // VSCode green - SIEMPRE verde si está ordenado
+      return const Color(0xFF4EC9B0);
     } else if (widget.step.swapping.contains(index)) {
-      return const Color(0xFFF44747); // VSCode red
+      return const Color(0xFFF44747);
     } else if (widget.step.comparing.contains(index)) {
-      return const Color(0xFFDCDCAA); // VSCode yellow
+      return const Color(0xFFDCDCAA);
+    } else {
+      return const Color(0xFF569CD6);
     }
-    return const Color(0xFF569CD6); // VSCode blue
   }
 
   bool _isActiveElement(int index) {
-    // Solo considerar activo si NO está ordenado y está en swapping o comparing
     if (widget.step.sorted.contains(index)) {
-      return false; // Los elementos ordenados no son "activos"
+      return false;
     }
     return widget.step.swapping.contains(index) || widget.step.comparing.contains(index);
   }
@@ -93,7 +103,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
       padding: const EdgeInsets.all(20),
       child: Column(
         children: [
-          // Action history panel - reemplaza la descripción única
+          // Action history panel
           Container(
             constraints: const BoxConstraints(minHeight: 80, maxHeight: 140),
             padding: const EdgeInsets.all(16),
@@ -139,7 +149,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                             ),
                           )
                           : ListView.builder(
-                            reverse: true, // Mostrar las más recientes arriba
+                            reverse: true,
                             itemCount: _actionHistory.length,
                             itemBuilder: (context, index) {
                               final reversedIndex = _actionHistory.length - 1 - index;
@@ -223,7 +233,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
 
           const SizedBox(height: 24),
 
-          // Array visualization (sin cambios)
+          // Array visualization
           Expanded(
             child: LayoutBuilder(
               builder: (context, constraints) {
@@ -248,7 +258,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                               final barColor = _getBarColor(index);
 
                               return AnimatedBuilder(
-                                animation: _pulseAnimation, // Sin escala, solo usar el pulso existente
+                                animation: _pulseAnimation,
                                 builder: (context, child) {
                                   return SizedBox(
                                     width:
@@ -276,15 +286,15 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
 
                                         const SizedBox(height: 4),
 
-                                        // Simple animated bar without effects
+                                        // Animated bar
                                         TweenAnimationBuilder<Color?>(
-                                          duration: const Duration(milliseconds: 200),
+                                          duration: const Duration(milliseconds: 400),
                                           tween: ColorTween(begin: barColor, end: barColor),
                                           builder: (context, color, child) {
                                             return TweenAnimationBuilder<double>(
-                                              duration: const Duration(milliseconds: 250),
+                                              duration: const Duration(milliseconds: 500),
                                               tween: Tween(end: height.clamp(20.0, double.infinity)),
-                                              curve: Curves.easeOut,
+                                              curve: Curves.easeInOut,
                                               builder: (context, animatedHeight, child) {
                                                 final effectiveColor = color ?? barColor;
 
@@ -301,9 +311,9 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                                         isActive
                                                             ? [
                                                               BoxShadow(
-                                                                color: effectiveColor.withOpacity(0.3),
-                                                                blurRadius: 4,
-                                                                spreadRadius: 1,
+                                                                color: effectiveColor.withOpacity(0.5),
+                                                                blurRadius: 6,
+                                                                spreadRadius: 2,
                                                               ),
                                                             ]
                                                             : null,
@@ -317,7 +327,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
                                                                 decoration: BoxDecoration(
                                                                   borderRadius: BorderRadius.circular(4),
                                                                   color: Colors.white.withOpacity(
-                                                                    _pulseAnimation.value * 0.05,
+                                                                    _pulseAnimation.value * 0.1,
                                                                   ),
                                                                 ),
                                                               );
@@ -340,7 +350,7 @@ class _ArrayVisualizerState extends State<ArrayVisualizer> with TickerProviderSt
 
                     const SizedBox(height: 16),
 
-                    // Index labels with smooth transitions
+                    // Index labels
                     SizedBox(
                       height: 24,
                       child: Row(

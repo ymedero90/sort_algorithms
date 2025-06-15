@@ -2,12 +2,14 @@ import '../models/sort_step.dart';
 import '../models/sorting_algorithm.dart';
 
 class SelectionSort extends SortingAlgorithm {
+  List<SortStep> _steps = [];
+
   @override
   String get name => 'Selection Sort';
 
   @override
   String get description =>
-      'Finds the minimum element and swaps it with the first position repeatedly. Complexity: O(n²) - Unstable';
+      'Simple comparison-based algorithm that selects the smallest element and swaps it. Complexity: O(n²) - Unstable';
 
   @override
   String get timeComplexity => 'O(n²)';
@@ -20,160 +22,194 @@ class SelectionSort extends SortingAlgorithm {
 
   @override
   List<String> get advantages => [
-    'Simple algorithm to understand and implement',
-    'No additional memory required (in-place)',
-    'Performs exactly n-1 swaps (minimum possible)',
-    'Works well for small datasets',
-    'Not affected by initial order of elements',
-    'Useful when memory writes are expensive',
+    'Simple to understand and implement',
+    'In-place sorting (O(1) space)',
+    'Minimum number of swaps (O(n))',
+    'Good for small arrays',
+    'Performance is not affected by initial order',
   ];
 
   @override
   List<String> get disadvantages => [
-    'O(n²) complexity not suitable for large data',
-    'Not stable (changes relative order of equal elements)',
-    'Poor performance compared to advanced algorithms',
-    'Makes many unnecessary comparisons',
-    'Not adaptive (same performance regardless of input)',
+    'Poor time complexity O(n²)',
+    'Not stable',
+    'Not adaptive (always O(n²))',
+    'Many comparisons even for sorted arrays',
   ];
 
   @override
   List<String> get pseudocode => [
     'function selectionSort(arr):',
-    '    n = length(arr)',
-    '    for i = 0 to n-2:',
-    '        min_idx = i',
-    '        for j = i+1 to n-1:',
-    '            if arr[j] < arr[min_idx]:',
-    '                min_idx = j',
-    '        if min_idx != i:',
-    '            swap(arr[i], arr[min_idx])',
+    '    for i = 0 to length(arr) - 2:',
+    '        minIndex = i',
+    '        for j = i + 1 to length(arr) - 1:',
+    '            if arr[j] < arr[minIndex]:',
+    '                minIndex = j',
+    '        if minIndex != i:',
+    '            swap(arr[i], arr[minIndex])',
     '    return arr',
   ];
 
   @override
+  String getTimeComplexityExplanation() {
+    return 'O(n²) in all cases because it always performs (n-1) + (n-2) + ... + 1 = n(n-1)/2 comparisons, regardless of the initial order of elements.';
+  }
+
+  @override
+  String getSpaceComplexityExplanation() {
+    return 'O(1) because it only uses a constant amount of extra variables (minIndex, temp for swapping) regardless of input size.';
+  }
+
+  @override
+  String getStabilityExplanation() {
+    return 'Not stable because it can swap non-adjacent elements, potentially changing the relative order of equal elements. For example, in [4a, 2, 4b], 4a might be swapped with 2, placing it after 4b.';
+  }
+
+  @override
   List<SortStep> sort(List<int> array) {
-    List<SortStep> steps = [];
+    // Debug flag - set to true only when debugging this specific algorithm
+    const bool debugMode = false;
+
+    if (debugMode) print('🔍 SelectionSort.sort() called with array: $array');
+
+    _steps = [];
     List<int> arr = List.from(array);
     int n = arr.length;
 
-    steps.add(
+    if (debugMode) print('📝 Initial array length: $n');
+
+    _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Selection Sort: Find minimum and place it at the beginning',
+        description: '🎯 Selection Sort: Finding minimum elements and placing them in order',
         currentPseudocodeLine: 0,
       ),
     );
 
-    steps.add(SortStep(array: List.from(arr), description: '📏 n = ${arr.length}', currentPseudocodeLine: 1));
+    if (debugMode) print('✅ Added initial step. Total steps: ${_steps.length}');
 
     for (int i = 0; i < n - 1; i++) {
-      steps.add(
+      if (debugMode) print('\n🔄 Outer loop iteration $i (finding minimum for position $i)');
+
+      int minIndex = i;
+
+      _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '🔄 Pass ${i + 1}: Finding minimum in unsorted portion [$i...${n - 1}]',
+          comparing: [i],
+          sorted: List.generate(i, (index) => index),
+          description: '🔍 Round ${i + 1}: Finding minimum element for position $i',
           currentPseudocodeLine: 1,
         ),
       );
 
-      steps.add(
-        SortStep(array: List.from(arr), description: '📝 Initializing minIndex = $i', currentPseudocodeLine: 2),
-      );
+      if (debugMode) {
+        print('📊 Added outer loop step. Array state: $arr');
+        print('🎯 Initial minIndex = $i (value: ${arr[i]})');
+      }
 
-      // Assume the current position holds the minimum element
-      int minIndex = i;
-      steps.add(
+      _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: [i],
-          description: '📝 Asumiendo que posición $i contiene el mínimo: min_idx = $i',
-          currentPseudocodeLine: 3,
+          description: '📝 Setting minIndex = $i (value: ${arr[i]})',
+          currentPseudocodeLine: 2,
         ),
       );
 
-      // Iterate through the unsorted portion to find the actual minimum
       for (int j = i + 1; j < n; j++) {
-        steps.add(
+        if (debugMode) print('  🔍 Inner loop: comparing arr[$j]=${arr[j]} with arr[$minIndex]=${arr[minIndex]}');
+
+        _steps.add(
           SortStep(
             array: List.from(arr),
-            comparing: [minIndex, j],
-            description: '🔍 Comparing arr[$minIndex] = ${arr[minIndex]} with arr[$j] = ${arr[j]}',
+            comparing: [j, minIndex],
+            sorted: List.generate(i, (index) => index),
+            description: '🔍 Comparing arr[$j] = ${arr[j]} with current minimum arr[$minIndex] = ${arr[minIndex]}',
             currentPseudocodeLine: 3,
           ),
         );
 
         if (arr[j] < arr[minIndex]) {
-          // Update min_idx if a smaller element is found
+          if (debugMode) print('  ✅ Found new minimum: arr[$j]=${arr[j]} < arr[$minIndex]=${arr[minIndex]}');
+
           minIndex = j;
-          steps.add(
+
+          _steps.add(
             SortStep(
               array: List.from(arr),
-              comparing: [minIndex, j],
-              description: '📍 New minimum found! minIndex = $j (value: ${arr[j]})',
+              comparing: [j],
+              sorted: List.generate(i, (index) => index),
+              description: '✅ New minimum found! minIndex = $j (value: ${arr[j]})',
               currentPseudocodeLine: 4,
             ),
           );
+        } else {
+          if (debugMode) print('  ❌ No change: arr[$j]=${arr[j]} >= arr[$minIndex]=${arr[minIndex]}');
         }
       }
 
-      // Move minimum element to its correct position
+      if (debugMode) print('🏁 Inner loop finished. Final minIndex = $minIndex (value: ${arr[minIndex]})');
+
       if (minIndex != i) {
+        if (debugMode) print('🔄 Swapping needed: arr[$i]=${arr[i]} <-> arr[$minIndex]=${arr[minIndex]}');
+
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            swapping: [i, minIndex],
+            sorted: List.generate(i, (index) => index),
+            description: '🔄 Swapping arr[$i] = ${arr[i]} with arr[$minIndex] = ${arr[minIndex]}',
+            currentPseudocodeLine: 6,
+          ),
+        );
+
+        // Perform swap
         int temp = arr[i];
         arr[i] = arr[minIndex];
         arr[minIndex] = temp;
 
-        steps.add(
+        if (debugMode) print('✅ Swap completed. New array: $arr');
+
+        _steps.add(
           SortStep(
             array: List.from(arr),
-            swapping: [i, minIndex],
-            description: '🔄 Swapping arr[$i] = $temp with arr[$minIndex] = ${arr[minIndex]}',
-            currentPseudocodeLine: 5,
+            sorted: List.generate(i + 1, (index) => index),
+            description: '✅ Element ${arr[i]} is now in its final position $i',
+            currentPseudocodeLine: 7,
           ),
         );
       } else {
-        steps.add(
+        if (debugMode) print('ℹ️  No swap needed: element ${arr[i]} is already in correct position');
+
+        _steps.add(
           SortStep(
             array: List.from(arr),
-            description: '✅ Element ${arr[i]} is already in correct position',
-            currentPseudocodeLine: 5,
+            sorted: List.generate(i + 1, (index) => index),
+            description: '✅ Element ${arr[i]} is already in correct position $i',
+            currentPseudocodeLine: 7,
           ),
         );
       }
 
-      steps.add(
-        SortStep(
-          array: List.from(arr),
-          sorted: List.generate(i + 1, (index) => index),
-          description: '✅ Pass ${i + 1} complete: Position $i has correct element ${arr[i]}',
-          currentPseudocodeLine: 6,
-        ),
-      );
+      if (debugMode) print('📊 End of iteration $i. Total steps so far: ${_steps.length}');
     }
 
-    steps.add(
+    _steps.add(
       SortStep(
         array: List.from(arr),
         sorted: List.generate(n, (index) => index),
-        description: '🎉 Selection Sort completed! Each pass found and placed the minimum element',
-        currentPseudocodeLine: 7,
+        description: '🎉 Selection Sort completed! All elements are in their final positions',
+        currentPseudocodeLine: 8,
       ),
     );
 
-    return steps;
-  }
+    if (debugMode) {
+      print('\n🎉 Selection Sort completed!');
+      print('📊 Final array: $arr');
+      print('📈 Total steps generated: ${_steps.length}');
+    }
 
-  @override
-  String getTimeComplexityExplanation() {
-    return 'O(n²) because it has two nested loops: the outer loop runs n-1 times, and for each iteration, the inner loop performs comparisons to find the minimum. Total comparisons: (n-1) + (n-2) + ... + 1 = n(n-1)/2 ≈ n²/2, which is O(n²). Unlike Bubble Sort, it cannot be optimized for best case.';
-  }
-
-  @override
-  String getSpaceComplexityExplanation() {
-    return 'O(1) because it only uses a constant amount of additional memory: variables for indices (i, j), minimum index (minIndex), and temporary variable for swapping. No auxiliary arrays are needed.';
-  }
-
-  @override
-  String getStabilityExplanation() {
-    return 'It is not stable because it can swap non-adjacent elements, potentially changing the relative order of equal elements. For example, if we have [5a, 3, 5b], after finding minimum 3, we swap 5a with 3, making it [3, 5b, 5a], changing the original order of the equal 5s.';
+    return _steps;
   }
 }

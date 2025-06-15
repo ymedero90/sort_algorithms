@@ -29,7 +29,25 @@ class SortingService {
     BitonicSort(),
   ];
 
+  // Debug flag - set to false to disable debug logging
+  static const bool _debugMode = false;
+
   static List<SortStep> executeAlgorithm(SortingAlgorithm algorithm, List<int> array) {
-    return algorithm.sort(array);
+    if (_debugMode) {
+      print('\n🚀 SortingService.executeAlgorithm()');
+      print('📊 Algorithm: ${algorithm.name}');
+      print('📊 Input array: $array');
+    }
+
+    final steps = algorithm.sort(array);
+
+    if (_debugMode) {
+      print('✅ Algorithm execution completed');
+      print('📈 Generated ${steps.length} steps');
+      print('🔍 First step: ${steps.isNotEmpty ? steps.first.description : 'No steps'}');
+      print('🔍 Last step: ${steps.length > 1 ? steps.last.description : 'Only one step'}');
+    }
+
+    return steps;
   }
 }

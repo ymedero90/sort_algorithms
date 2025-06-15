@@ -7,7 +7,8 @@ class BubbleSort extends SortingAlgorithm {
 
   @override
   String get description =>
-      'The simplest sorting algorithm that works by repeatedly swapping adjacent elements. Complexity: O(n²) - Stable';
+      'Simple comparison-based algorithm that repeatedly steps through the list, '
+      'compares adjacent elements and swaps them if they are in the wrong order.';
 
   @override
   String get timeComplexity => 'O(n²)';
@@ -20,37 +21,48 @@ class BubbleSort extends SortingAlgorithm {
 
   @override
   List<String> get advantages => [
-    'Simplest algorithm to understand and implement',
-    'No additional memory required (in-place)',
-    'Stable algorithm (maintains relative order)',
-    'Automatically detects if array is already sorted',
-    'Works well for very small datasets',
-    'Useful for educational purposes and demonstration',
+    'Simple implementation and easy to understand',
+    'No additional memory space needed (in-place)',
+    'Adaptive - performs better on nearly sorted data',
+    'Stable - maintains relative order of equal elements',
+    'Can detect if list is already sorted',
   ];
 
   @override
   List<String> get disadvantages => [
-    'O(n²) complexity not suitable for large data',
-    'Very poor performance compared to other algorithms',
-    'Makes many unnecessary comparisons and swaps',
-    'Almost no real-world applications',
-    'Mainly limited to academic teaching',
+    'Poor time complexity O(n²) for all cases',
+    'More swaps compared to other O(n²) algorithms',
+    'Not practical for large datasets',
+    'Inefficient for reverse-sorted arrays',
   ];
 
   @override
   List<String> get pseudocode => [
     'function bubbleSort(arr):',
-    '    n = length(arr)',
     '    for i = 0 to n-1:',
     '        swapped = false',
     '        for j = 0 to n-i-2:',
     '            if arr[j] > arr[j+1]:',
     '                swap(arr[j], arr[j+1])',
     '                swapped = true',
-    '        if swapped == false:',
-    '            break',
+    '        if not swapped: break',
     '    return arr',
   ];
+
+  @override
+  String getTimeComplexityExplanation() =>
+      'Best case O(n) when array is already sorted with early termination. '
+      'Average and worst case O(n²) due to nested loops comparing all pairs.';
+
+  @override
+  String getSpaceComplexityExplanation() =>
+      'Only uses a constant amount of extra space for temporary variables, '
+      'regardless of input size.';
+
+  @override
+  String getStabilityExplanation() =>
+      'Stable because equal elements are never swapped, maintaining their '
+      'relative order throughout the sorting process.';
 
   @override
   List<SortStep> sort(List<int> array) {
@@ -61,41 +73,99 @@ class BubbleSort extends SortingAlgorithm {
     steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Bubble Sort: The simplest algorithm. Sorts through multiple passes',
+        description: '🎯 Starting Bubble Sort: We will make ${n - 1} passes through the array',
         currentPseudocodeLine: 0,
       ),
     );
 
-    // We sort the array using multiple passes
-    for (int i = 0; i < n; i++) {
+    steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 Strategy: In each pass, the largest unsorted element will "bubble up" to its correct position',
+        currentPseudocodeLine: 0,
+      ),
+    );
+
+    for (int i = 0; i < n - 1; i++) {
       bool swapped = false;
 
       steps.add(
         SortStep(
           array: List.from(arr),
+          description: '🔄 PASS ${i + 1}: Looking for the largest element in positions [0..${n - 1 - i}]',
+          currentPseudocodeLine: 1,
+        ),
+      );
+
+      steps.add(
+        SortStep(
+          array: List.from(arr),
+          sorted: List.generate(i, (index) => n - 1 - index),
           description:
-              '🔄 Pass ${i + 1}: After ${i == 0 ? "this pass" : "$i passes"}, ${i == 0 ? "the maximum element will go" : "the $i largest elements are"} to the end',
+              '📊 Status: ${i == 0 ? 'No elements sorted yet' : 'Elements ${List.generate(i, (index) => n - 1 - index).map((idx) => arr[idx]).join(', ')} already in final position'}',
+          currentPseudocodeLine: 1,
+        ),
+      );
+
+      steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '🏁 Goal: Find the largest element and move it to position ${n - 1 - i}',
           currentPseudocodeLine: 2,
         ),
       );
 
       steps.add(
-        SortStep(array: List.from(arr), description: '📝 Initializing swapped = false', currentPseudocodeLine: 3),
+        SortStep(
+          array: List.from(arr),
+          description: '📝 Initialize: swapped = false (will track if any swaps happen)',
+          currentPseudocodeLine: 2,
+        ),
       );
 
-      // After k passes, the largest k elements are in correct position
       for (int j = 0; j < n - i - 1; j++) {
         steps.add(
           SortStep(
             array: List.from(arr),
             comparing: [j, j + 1],
-            description: '🔍 Comparing adjacent elements: ${arr[j]} and ${arr[j + 1]}',
-            currentPseudocodeLine: 5,
+            sorted: List.generate(i, (index) => n - 1 - index),
+            description: '👀 EXAMINE: Looking at adjacent pair - arr[$j]=${arr[j]} and arr[${j + 1}]=${arr[j + 1]}',
+            currentPseudocodeLine: 4,
           ),
         );
 
-        // Swap if larger element is before smaller element
+        steps.add(
+          SortStep(
+            array: List.from(arr),
+            comparing: [j, j + 1],
+            sorted: List.generate(i, (index) => n - 1 - index),
+            description: '❓ QUESTION: Is ${arr[j]} > ${arr[j + 1]}? Are they in wrong order?',
+            currentPseudocodeLine: 4,
+          ),
+        );
+
         if (arr[j] > arr[j + 1]) {
+          steps.add(
+            SortStep(
+              array: List.from(arr),
+              swapping: [j, j + 1],
+              sorted: List.generate(i, (index) => n - 1 - index),
+              description: '❌ WRONG ORDER: ${arr[j]} > ${arr[j + 1]} - These need to be swapped!',
+              currentPseudocodeLine: 5,
+            ),
+          );
+
+          steps.add(
+            SortStep(
+              array: List.from(arr),
+              swapping: [j, j + 1],
+              sorted: List.generate(i, (index) => n - 1 - index),
+              description: '🔄 SWAPPING: Exchanging arr[$j] and arr[${j + 1}]...',
+              currentPseudocodeLine: 5,
+            ),
+          );
+
+          // Perform swap
           int temp = arr[j];
           arr[j] = arr[j + 1];
           arr[j + 1] = temp;
@@ -105,7 +175,8 @@ class BubbleSort extends SortingAlgorithm {
             SortStep(
               array: List.from(arr),
               swapping: [j, j + 1],
-              description: '🔄 Swap: ${arr[j]} < ${arr[j + 1]} (larger element moves toward end)',
+              sorted: List.generate(i, (index) => n - 1 - index),
+              description: '✅ SWAPPED: Now arr[$j]=${arr[j]} and arr[${j + 1}]=${arr[j + 1]} - Order corrected!',
               currentPseudocodeLine: 6,
             ),
           );
@@ -113,67 +184,85 @@ class BubbleSort extends SortingAlgorithm {
           steps.add(
             SortStep(
               array: List.from(arr),
-              swapping: [j, j + 1],
-              description: '📝 swapped = true',
-              currentPseudocodeLine: 7,
+              description: '📝 MARK: swapped = true (we made at least one swap in this pass)',
+              currentPseudocodeLine: 6,
+            ),
+          );
+        } else {
+          steps.add(
+            SortStep(
+              array: List.from(arr),
+              comparing: [j, j + 1],
+              sorted: List.generate(i, (index) => n - 1 - index),
+              description: '✅ CORRECT ORDER: ${arr[j]} ≤ ${arr[j + 1]} - No swap needed, continue',
+              currentPseudocodeLine: 4,
+            ),
+          );
+        }
+
+        if (j < n - i - 2) {
+          steps.add(
+            SortStep(
+              array: List.from(arr),
+              description: '➡️ CONTINUE: Moving to next adjacent pair [${j + 1}, ${j + 2}]',
+              currentPseudocodeLine: 3,
             ),
           );
         }
       }
 
-      // Mark the correctly positioned elements
-      List<int> currentSorted = [];
-      for (int k = n - 1 - i; k < n; k++) {
-        currentSorted.add(k);
-      }
-
       steps.add(
         SortStep(
           array: List.from(arr),
-          sorted: currentSorted,
-          description: '✅ Pass ${i + 1} complete: Element ${arr[n - 1 - i]} is in its correct position',
-          currentPseudocodeLine: 8,
+          sorted: List.generate(i + 1, (index) => n - 1 - index),
+          description:
+              '🎯 PASS ${i + 1} COMPLETE: Largest element ${arr[n - 1 - i]} has bubbled to position ${n - 1 - i}',
+          currentPseudocodeLine: 7,
         ),
       );
 
-      // Optimization: if no swapping occurred, array is sorted
+      // Check for early termination
       if (!swapped) {
         steps.add(
           SortStep(
             array: List.from(arr),
+            description: '🔍 CHECKING: Did we make any swaps in this pass? swapped = $swapped',
+            currentPseudocodeLine: 7,
+          ),
+        );
+
+        steps.add(
+          SortStep(
+            array: List.from(arr),
             sorted: List.generate(n, (index) => index),
-            description: '🚀 Optimization activated! No swaps = Array sorted. Best case: O(n)',
-            currentPseudocodeLine: 9,
+            description: '🎉 EARLY TERMINATION: No swaps made = array is already sorted! We can stop here.',
+            currentPseudocodeLine: 7,
           ),
         );
         break;
+      } else {
+        steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '📝 CHECKING: swapped = $swapped, so we need to continue with more passes',
+            currentPseudocodeLine: 7,
+          ),
+        );
       }
     }
 
-    steps.add(
-      SortStep(
-        array: List.from(arr),
-        sorted: List.generate(n, (index) => index),
-        description: '🎉 Bubble Sort completed! Each pass placed the largest element in its final position',
-        currentPseudocodeLine: 10,
-      ),
-    );
+    // Final state - mark all as sorted
+    if (steps.last.sorted.length != n) {
+      steps.add(
+        SortStep(
+          array: List.from(arr),
+          sorted: List.generate(n, (index) => index),
+          description: '🎉 BUBBLE SORT COMPLETE: All ${n - 1} passes finished - Array is fully sorted!',
+          currentPseudocodeLine: 8,
+        ),
+      );
+    }
 
     return steps;
-  }
-
-  @override
-  String getTimeComplexityExplanation() {
-    return 'O(n²) because it has two nested loops: the outer loop executes n-1 passes, and in each pass, the inner loop performs up to n-1 comparisons. Total: (n-1) × (n-1) ≈ n² comparisons. Even in the best case (already sorted array), without optimization it would be O(n²), but with the "swapped" flag optimization it can be O(n).';
-  }
-
-  @override
-  String getSpaceComplexityExplanation() {
-    return 'O(1) because it only uses a constant amount of additional memory: some variables for indices (i, j) and a temporary variable for swaps. It doesn\'t require auxiliary arrays nor grows with input size.';
-  }
-
-  @override
-  String getStabilityExplanation() {
-    return 'It is stable because it only swaps adjacent elements when the left one is strictly greater than the right one (arr[j] > arr[j+1]). Equal elements are never swapped, maintaining their original relative order.';
   }
 }

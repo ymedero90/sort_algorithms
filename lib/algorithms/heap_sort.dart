@@ -85,13 +85,29 @@ class HeapSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🎯 Heap Sort: Construcción de heap y extracción ordenada',
+        description: '🎯 Heap Sort: Two phases - Build max heap, then extract elements',
         currentPseudocodeLine: 0,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 Phase 1: Building max heap from unsorted array',
+        currentPseudocodeLine: 1,
       ),
     );
 
     // Build max heap
     _buildMaxHeap(arr, n);
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📋 Phase 2: Extracting maximum elements one by one',
+        currentPseudocodeLine: 2,
+      ),
+    );
 
     // Extract elements from heap one by one
     for (int i = n - 1; i > 0; i--) {
@@ -99,8 +115,17 @@ class HeapSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: [0, i],
-          description: '🔄 Extrayendo máximo: Intercambiando arr[0] = ${arr[0]} con arr[$i] = ${arr[i]}',
-          currentPseudocodeLine: 2,
+          description: '🔄 EXTRACT: Maximum element arr[0] = ${arr[0]} goes to final position $i',
+          currentPseudocodeLine: 3,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          swapping: [0, i],
+          description: '🔄 SWAP: Moving maximum ${arr[0]} to sorted section, bringing ${arr[i]} to root',
+          currentPseudocodeLine: 3,
         ),
       );
 
@@ -114,8 +139,17 @@ class HeapSort extends SortingAlgorithm {
           array: List.from(arr),
           swapping: [0, i],
           sorted: List.generate(n - i, (index) => n - 1 - index),
-          description: '✅ Elemento ${arr[i]} colocado en posición final',
+          description: '✅ PLACED: Element ${arr[i]} is now in final position $i',
           currentPseudocodeLine: 3,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [0],
+          description: '🔧 RESTORE: Heap property violated - need to heapify from root with $i elements',
+          currentPseudocodeLine: 4,
         ),
       );
 
@@ -127,8 +161,8 @@ class HeapSort extends SortingAlgorithm {
       SortStep(
         array: List.from(arr),
         sorted: List.generate(n, (index) => index),
-        description: '🎉 ¡Heap Sort completado! Todos los elementos extraídos del heap',
-        currentPseudocodeLine: 4,
+        description: '🎉 Heap Sort completed! All elements extracted from heap in descending order',
+        currentPseudocodeLine: 5,
       ),
     );
 
@@ -139,8 +173,18 @@ class HeapSort extends SortingAlgorithm {
     _steps.add(
       SortStep(
         array: List.from(arr),
-        description: '🏗️ Construyendo max heap desde abajo hacia arriba',
+        description: '🏗️ BUILD HEAP: Starting from last non-leaf node and working upwards',
         currentPseudocodeLine: 6,
+      ),
+    );
+
+    int lastNonLeaf = n ~/ 2 - 1;
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        comparing: [lastNonLeaf],
+        description: '📍 STARTING POINT: Last non-leaf node is at index $lastNonLeaf',
+        currentPseudocodeLine: 7,
       ),
     );
 
@@ -150,12 +194,30 @@ class HeapSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           comparing: [i],
-          description: '🔧 Heapificando desde nodo $i (padre de ${2 * i + 1})',
-          currentPseudocodeLine: 7,
+          description: '🔧 HEAPIFY: Processing node $i - ensuring heap property for subtree rooted at $i',
+          currentPseudocodeLine: 8,
         ),
       );
       _heapify(arr, i, n);
+
+      if (i > 0) {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '⬅️ MOVE UP: Moving to previous node ${i - 1}',
+            currentPseudocodeLine: 8,
+          ),
+        );
+      }
     }
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '✅ MAX HEAP BUILT: Root contains maximum element ${arr[0]}',
+        currentPseudocodeLine: 9,
+      ),
+    );
   }
 
   void _heapify(List<int> arr, int root, int size) {
@@ -167,32 +229,96 @@ class HeapSort extends SortingAlgorithm {
       SortStep(
         array: List.from(arr),
         comparing: [root],
-        description: '🔍 Heapify desde nodo $root: buscando el mayor entre nodo y sus hijos',
-        currentPseudocodeLine: 10,
+        description:
+            '🔍 HEAPIFY: Checking node $root (left: ${left < size ? left : "none"}, right: ${right < size ? right : "none"})',
+        currentPseudocodeLine: 11,
+      ),
+    );
+
+    _steps.add(
+      SortStep(
+        array: List.from(arr),
+        description: '📝 ASSUME: largest = $root (node ${arr[root]})',
+        currentPseudocodeLine: 11,
       ),
     );
 
     // If left child is larger than root
-    if (left < size && arr[left] > arr[largest]) {
-      largest = left;
+    if (left < size) {
       _steps.add(
         SortStep(
           array: List.from(arr),
           comparing: [left, root],
-          description: '👈 Hijo izquierdo arr[$left] = ${arr[left]} > arr[$root] = ${arr[root]}',
+          description: '👈 CHECK LEFT: arr[$left] = ${arr[left]} vs arr[$root] = ${arr[root]}',
+          currentPseudocodeLine: 14,
+        ),
+      );
+
+      if (arr[left] > arr[largest]) {
+        largest = left;
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            comparing: [left],
+            description: '✅ LEFT WINS: ${arr[left]} > ${arr[root]} - left child is larger',
+            currentPseudocodeLine: 15,
+          ),
+        );
+      } else {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            comparing: [root],
+            description: '❌ ROOT WINS: ${arr[root]} ≥ ${arr[left]} - root remains largest',
+            currentPseudocodeLine: 14,
+          ),
+        );
+      }
+    } else {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '❌ NO LEFT CHILD: Node $root has no left child',
           currentPseudocodeLine: 14,
         ),
       );
     }
 
     // If right child is larger than largest so far
-    if (right < size && arr[right] > arr[largest]) {
-      largest = right;
+    if (right < size) {
       _steps.add(
         SortStep(
           array: List.from(arr),
-          comparing: [right, largest == left ? left : root],
-          description: '👉 Hijo derecho arr[$right] = ${arr[right]} es el mayor',
+          comparing: [right, largest],
+          description: '👉 CHECK RIGHT: arr[$right] = ${arr[right]} vs current largest = ${arr[largest]}',
+          currentPseudocodeLine: 16,
+        ),
+      );
+
+      if (arr[right] > arr[largest]) {
+        largest = right;
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            comparing: [right],
+            description: '✅ RIGHT WINS: ${arr[right]} > ${arr[largest == left ? left : root]} - right child is largest',
+            currentPseudocodeLine: 17,
+          ),
+        );
+      } else {
+        _steps.add(
+          SortStep(
+            array: List.from(arr),
+            description: '❌ CURRENT WINS: ${arr[largest]} ≥ ${arr[right]} - current largest remains',
+            currentPseudocodeLine: 16,
+          ),
+        );
+      }
+    } else {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          description: '❌ NO RIGHT CHILD: Node $root has no right child',
           currentPseudocodeLine: 16,
         ),
       );
@@ -204,8 +330,8 @@ class HeapSort extends SortingAlgorithm {
         SortStep(
           array: List.from(arr),
           swapping: [root, largest],
-          description: '🔄 Intercambiando arr[$root] = ${arr[root]} con arr[$largest] = ${arr[largest]}',
-          currentPseudocodeLine: 18,
+          description: '🔄 VIOLATION FOUND: Swapping arr[$root] = ${arr[root]} with arr[$largest] = ${arr[largest]}',
+          currentPseudocodeLine: 19,
         ),
       );
 
@@ -216,13 +342,32 @@ class HeapSort extends SortingAlgorithm {
       _steps.add(
         SortStep(
           array: List.from(arr),
-          description: '♻️ Recursivamente heapificando subárbol afectado desde $largest',
+          swapping: [root, largest],
+          description: '✅ SWAPPED: arr[$root] = ${arr[root]}, arr[$largest] = ${arr[largest]}',
           currentPseudocodeLine: 19,
+        ),
+      );
+
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [largest],
+          description: '♻️ RECURSE: Check if subtree at $largest still satisfies heap property',
+          currentPseudocodeLine: 20,
         ),
       );
 
       // Recursively heapify the affected sub-tree
       _heapify(arr, largest, size);
+    } else {
+      _steps.add(
+        SortStep(
+          array: List.from(arr),
+          comparing: [root],
+          description: '✅ HEAP PROPERTY SATISFIED: Node $root is already largest in its subtree',
+          currentPseudocodeLine: 18,
+        ),
+      );
     }
   }
 }
